@@ -1,0 +1,86 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{tikz}
+
+\usepackage[shortlabels]{enumitem}
+
+\usepackage{algorithm}
+\usepackage{booktabs}
+\usepackage{algpseudocode}
+
+\textwidth=7.6in
+\textheight=9.9in
+\topmargin=-.9in
+\headheight=0in
+\headsep=.5in
+\hoffset=-1.5in
+\setlength\parindent{0pt}
+
+
+\begin{document}
+
+\begin{center}
+    \Large{\textbf{Problem Set 1 Solutions}} \\[0.25ex]
+    Calvin Walker
+\end{center}
+\textbf{1. Probability Review}
+\begin{enumerate}[(a)]
+    \item \begin{enumerate}[(i)]
+        \item \begin{align*}
+            P(A|B, E)P(B | E) &= \frac{P(A, B, E)}{P(B, E)}P(B|E) = \frac{P(A, B, E)}{P(E)P(B|E)}P(B|E) \\[0.5ex]
+            &= \frac{P(A, B, E)}{P(E)} = P(A, B | E)
+        \end{align*}
+        So $P(A, B | E) =  P(A|B, E)P(B | E)$ as needed. 
+        \item 
+    \end{enumerate}
+    \item . 
+    \item .
+    \item \begin{enumerate}[(i)]
+        \item \begin{align*}
+            P(H|E_1, E_2) &= \frac{P(H, E_1, E_2)}{P(E_1, E_2)} = \frac{P(H)P(E_1|H)P(E_2|E_1, H)}{P(E_1, E_2)} \\
+            &= \frac{P(H)P(E_1, E_2 | H)}{P(E_1, E_2)}
+        \end{align*}
+        So option $(b)$ is sufficient to compute $P(H|E_1, E_2)$
+        \item If $(E_1 \perp E_2 | H)$, then: \begin{align*}
+            \frac{P(H)P(E_1, E_2 | H)}{P(E_1, E_2)} &= \frac{P(H)P(E_1|H) P(E_2 | H)}{\sum_{i}P(E_1|H_i)P(E_2|H_i)}
+        \end{align*}
+        So option $(c)$ is sufficient to compute $P(H|E_1, E_2)$
+    \end{enumerate}
+    \item \begin{enumerate}[(i)]
+        \item .
+        \item \begin{align*}
+            - E_p[- \log P(X)] &= - \sum_{X} P(X) (-\log P(X)) \\
+            &= \sum_{X} P(X) \sum_{X} \log P(X) \\
+            &\leq \log \sum_{X} P(X) = 0
+        \end{align*}
+        So $E_p[- \log P(X)] \geq 0$ as needed 
+        \item \begin{align*}
+            - E_p[\log \frac{P(X)}{Q(X)}] &= - \sum_X P(X) \log \frac{P(X)}{Q(X)} \\
+            &= \sum_X P(X) \log \frac{Q(X)}{P(X)} \\
+            &\leq \log \sum_X Q(X) = 0
+        \end{align*}
+        So $E_p[\log \frac{P(X)}{Q(X)}] \geq 0$ as needed 
+    \end{enumerate}
+    \item \begin{enumerate}[(i)]
+        \item \begin{align*}
+            H_p(X|Y) - H_p(X) &= E_p[-\log P(X|Y)] - E_p[-\log P(X)] \\ 
+            &= E_p\bigg[\log \frac{P(X)}{P(X|Y)}\bigg] \\
+            &= \sum_{X, Y} P(X, Y) \log \frac{P(X)}{P(X|Y)} = \sum_{X, Y} P(X, Y) \log \frac{P(X)}{P(X, Y)/P(Y)}\\
+            &\leq \log \sum_{X,Y} P(X)P(Y) = 0
+        \end{align*}
+        So $H_p(X|Y) - H_p(X) \leq 0$ and $H_p(X|Y) \leq H_p(X)$ as needed 
+        \item \begin{align*}
+            -I(X;Y) &= -E_p\bigg[\log \frac{P(X|Y)}{P(X)}\bigg] \\
+            &\leq -\log \sum_{X, Y} P(X, Y) \frac{P(X|Y)}{P(X)} = -\log \sum_{X, Y} P(X, Y)\frac{P(X,Y)/P(Y)}{P(X)} \\
+            &= \log \sum_{X, Y}P(X)P(Y) = 0
+        \end{align*}
+        So $I(X;Y) \geq 0$ as needed
+    \end{enumerate}
+    \item  \begin{enumerate}[(i)]
+        \item .
+        \item 
+    \end{enumerate}
+\end{enumerate}
+
+\end{document}

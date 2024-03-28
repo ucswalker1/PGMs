@@ -1,0 +1,121 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{tikz}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+\textwidth=7.6in
+\textheight=9.9in
+\topmargin=-.9in
+\headheight=0in
+\headsep=.5in
+\hoffset=-1.5in
+\setlength\parindent{0pt}
+
+\begin{document}
+
+\begin{center}
+    \textbf{Probabilistic Graphical Models Class Notes} \\[0.25ex]
+    Calvin Walker
+\end{center}
+\textbf{Lecture 2: Bayesian Networks} \\[0.5ex]
+\textbf{Structure} 
+\begin{itemize}
+    \item $G = (V, E)$ is a directed acyclic graph such that: 
+    \begin{itemize}
+        \item One node $i \in V$ for each random variable $X_i$
+        \item Pa$^G_{X_i}$ denotes the parents of $X_i$
+        \item NonDescendants$_{X_i}$ are variables that are not descendents of $X_i$
+    \end{itemize}
+    \item $G$ encodes the following local independencies \begin{equation*}
+        I_{l}(G) = (X_i \perp \text{NonDescendants}_{X_i} | \text{Pa}^G_{X_i})\ \forall X_i
+    \end{equation*}
+    i.e. $X_i$ is conditionally independent of NonDescendants$_{X_i}$ given Pa$^G_{X_i}$
+\end{itemize}
+\begin{itemize}
+    \item A distribuition $P$ factorizes according to $G$ if and only if \begin{equation*}
+        P(X_i, \dots , X_n) = \prod_{i \in V}P(X_i | \text{Pa}^G_{X_i})
+    \end{equation*}
+    \item A \textbf{Bayesian Network} is a pair $B = (P, G)$ for which \begin{itemize}
+        \item $P$ factorizes over $G$
+        \item $P$ is a set of conditional probability distributions $P(X_i|\text{Pa}^G_{X_i})$
+    \end{itemize}
+    \item So $G$ provides a compact way to represent conditional independencies that hold under $P$
+\end{itemize}
+\textbf{Independence Maps}
+\begin{itemize}
+    \item Let $I(P) = \{(X \perp Y\ |\ Z)\}$ be the set of independence assertions that hold in $P$
+    \item A BN structure $G$ is an I-map for a set of independencies $I$ if $I(G) \subseteq I$
+    \item A BN structure $G$ is an I-map fpr $P$ is $G$ is an I-map for $I(P)$, i.e. $I(G) \subseteq I(P)$ \begin{itemize}
+        \item Any independence asserted by $G$ must hold in $P$, but the converse is not necessarily true. $P$ may have additional independencies not reflected in $G$
+        \item So while any conditional independency expressed by $G$ holds, the conditional dependencies expressed by $G$ hold for some distributions that factorize over $G$
+    \end{itemize}
+\end{itemize}
+Representation Theorem: Given a BN structure $G$ and joint distribution $P$, $P$ factorizes $G$ if and only if $G$ is an I-map for $P$ \\[0.5ex]
+Proof $(P \leftarrow Q)$: Let $T$ be a topological ordering on the nodes in $G$, and $v_i$ be the set of nodes appearing before $i$ in $T$, excluding Pa$^G_{X_i}$. From $I_{l}(G)$ we have that $\{X_i \perp X_{v_i}\ |\ \text{Pa}^G_{X_i}\}$. Since $I(G) \subseteq I(P)$, \begin{equation*}
+    P(X_1, \dots , X_n) = \prod_{i \in T} P(X_i | X_{v_i}, \text{Pa}^G_{X_i}) = \prod_{i \in T} P(X_i | \text{Pa}^G_{X_i})
+\end{equation*}
+Active Trial: Let $G$ be a BN structure $X_1 \leftrightarrow \dots \leftrightarrow X_n$ be a trail in $G$, and $Z$ be a subset of observed variables. The trail is active, i.e. dependency/information flow given $Z$ if \begin{itemize}
+    \item For every v-structure, $X_i$ or one of its descendents is in $Z$
+    \item No other node along the trail is in $Z$
+\end{itemize}
+D-seperation: let $X, Y, Z$ be three sets of nodes in $G$\begin{itemize}
+    \item $X$ and $Y$ are d-separated given $Z$ if there is no active trail between any node in $X$ to any node in $Y$ given $Z$
+    \item I.e if d-sep$_G(X, Y\ |\ Z)$, then $(X \perp Y\ |\ Z)$
+\end{itemize}
+For a BN structure $G$, we define the global Markov independencies as the set of independencies that correspond to d-separation: \begin{equation*}
+    I(G) = \{(X \perp X\ |\ Z : \text{d-sep}_G(X, Y | Z))\}
+\end{equation*}
+\textbf{Lecture 4: Factor Graphs, Gaussian Networks}
+\begin{itemize}
+    \item The Markov network $H$ does not make the structure of the distribuition explicit, i.e. maximum cliques vs. other complete graph subsets. 
+    \item A \textbf{factor graph} is a bipartite undirected graph with variable nodes (oval) and factor nodes (square). Edges exist only between variable nodes and factor nodes 
+    \item Each factor node is associated with a single potential, the scope of which is the variables that are the factor's neighbors 
+    \item Boltzmann Distribution: \begin{itemize}
+        \item We can rewrite a factor $\phi(D)$ as $\phi(D) = \exp (-\psi(D))$ where $\psi(D) = - \log \phi(D)$
+        \item The factorized distribution then becomes: \begin{equation*}
+            P(X_1, \dots , X_n) = \frac{1}{Z}\exp \bigg( -\sum_{k = 1}^{K} \psi_k (D_k)\bigg)
+        \end{equation*}
+        \item $\sum_{k = 1}^{K}\psi_k(D_k)$ is referred to as the ``free energy''
+        \item Can do inference as energy minimization
+    \end{itemize}
+    \item Log-Linear Markov Networks with Features: \begin{itemize}
+        \item A feature is a function $f: \text{Val}(D_i) \mapsto \mathbb{R}$
+        \item A set of features $F = \{f_1(D_1) \dots f_K(D_M)\}$ where $D_i$ is a complete subgraph in $H$
+        \item A set of weights $\{w_1, \dots , w_M\}$ such that \begin{equation*}
+            \propto \exp \bigg(- \sum_{i = 1}^{M}w_if_i(D_i) \bigg)
+        \end{equation*}
+        \item Features and weights can be reused for different factors 
+        \item Clasically, features we hand-designed and weights learned from data 
+    \end{itemize}
+    \item Gaussian Markov Random Fields: \begin{itemize}
+        \item Consider a multivariate Gaussian density $p$ over $x = [x_1, \dots , x_n]^T$
+        \item The density function is defined as: \begin{equation*}
+            p(x) = \frac{1}{(2\pi)^{n/2}|\Sigma|^{1/2}}\exp \bigg(\frac{-1}{2}(x - \mu)^T \Sigma^{-1}(x - \mu)\bigg)
+        \end{equation*}
+        Where the term in the exponential can be expressed as: \begin{align*}
+            \frac{-1}{2}(x - \mu)^T \Sigma^{-1}(x - \mu) &= \frac{-1}{2}(x - \mu)^T \Lambda (x - \mu)\\
+            &= \frac{-1}{2}(x^T \Lambda x - 2x^T \Lambda \mu + \mu^T \Lambda \mu)
+        \end{align*}
+        This is referred to as the cononical form where $\Lambda = \Sigma^{-1}$ is the information matrix and $\eta = \Lambda\mu$ is the information vector 
+        \item The information for parametrization $x \sim \mathcal{N}^{-1}(\eta, \Lambda)$ can also be expressed as \begin{align*}
+            p(x) &\propto \exp (-\frac{1}{2}\sum_{i}\Lambda_{ii}x_i^2 + 2\eta_i x_i) \exp(-\sum_{i, j : i \neq j }\Lambda_{ij}x_ix_j) \\
+            &\vdots \\
+            &= \prod_i \phi_i(x_i) \cdot \prod_{i,j:i\neq j} \phi_{ij}(x_i, x_j)
+        \end{align*}
+        \item Any Gaussian distribuition can be represented by a pairwise Markov network with quadradic node and edge potentials 
+        \item Two nodes $x_i$ and $x_j$ have an edge in the GMRF only if $\Lambda_{ij} \neq 0$
+        \item The structure of the information matrix $\Lambda$ directly encodes the Markov network graph structure 
+    \end{itemize}
+    \item Converting Bayesian Networks to Markov Networks \begin{itemize}
+        \item Moralization coverts a BN to a Markov network 
+        \item The moral graph $\mathcal{M}(G)$ of a BN structure is an untirected graph over $V$ that contains an edge between $X_i$ and $X_j$ if:\begin{itemize}
+            \item there is a direct edge between them 
+            \item they are parents of the same node 
+        \end{itemize}
+    \end{itemize}
+\end{itemize}
+
+
+\end{document}
