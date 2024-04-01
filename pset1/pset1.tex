@@ -34,7 +34,7 @@
             &= \frac{P(A, B, E)}{P(E)} = P(A, B | E)
         \end{align*}
         So $P(A, B | E) =  P(A|B, E)P(B | E)$ as needed. 
-        \item 
+        \item .
     \end{enumerate}
     \item \begin{align*}
         P(X, Y | Z, W) &= \frac{P(X, Y, Z, W)}{P(Z, W)} = \frac{P(X, Y, W|Z)}{P(W | Z)} \\ 
@@ -116,10 +116,11 @@
     \item No, $M$ and $N$ share the common cause $F$
     \item No, there is an active trail $M \leftrightharpoons F \leftrightharpoons H \leftrightharpoons D \leftrightharpoons N$
 \end{enumerate}
-\textbf{2.2} \begin{enumerate}[(a)]
-    \item .
-    \item .
-    \item .
+\textbf{2.2} : $P(W, F, D, M, H, L, N) = P(W)P(F|W)P(D|W)P(M|F)P(H|F,D)P(L|H)P(N|L,D)$ \\[1.5ex]
+\textbf{2.3} \begin{enumerate}[(a)]
+    \item $P(F) = P(F|W)P(W) + (F|\neg W)P(\neg W) = 0.25$
+    \item $P(F|W, H) = \frac{P(F, W, H)}{P(W, H)} = \frac{\sum_D P(W, F, D, H)}{\sum_D \sum_F P(W, F, D, H)} = \frac{0.162}{0.267} = 0.61$
+    \item $P(F|W, D, H) = \frac{P(F, W, D, H)}{P(W, D, H)} = 0.43$
 \end{enumerate}
 \textbf{3.} \begin{enumerate}[(a)]
     \item \begin{align*}
@@ -147,8 +148,19 @@
         &= \sigma(a_i + \sum_{j} h_jw_{ij})
     \end{align*}
     \item Yes, as shown in parts (a) and (b), the hidden units are conditionally independent given the visible units and vice versa. So the Markov network is an I-map for the distribution in Equation 2.
-    \item . 
-    \item .
+    \item \begin{align*}
+        \frac{\partial \log P(V = v)}{\partial w_{ij}} &= \frac{\partial}{\partial w_{ij}} \log \frac{1}{Z}\sum_{h}\exp(-E(v, h)) \\[0.5ex] 
+        &= \frac{\partial}{\partial w_{ij}} \log \sum_{h} \exp(-E(v, h)) - \frac{\partial}{\partial w_{ij}} \log Z \\[0.5ex]
+        &= \frac{\frac{\partial}{\partial w_{ij}}\sum_h \exp(-E(v, h))}{\sum_h \exp(-E(v,h))} - \frac{\frac{\partial}{\partial w_{ij}} Z}{Z} \\[0.5ex]
+        &= \frac{\sum_h \exp(-E(v, h))\frac{\partial}{\partial w_{ij}}(-E(v, h))}{\sum_h \exp(-E(v, h))} - \frac{\sum_{v, h}\exp(-E(v,h))\frac{\partial}{\partial w_{ij}}(-E(v,h))}{Z} \\[0.5ex]
+    \end{align*}
+    Where $\frac{\partial}{\partial w_{ij}}(-E(v, h)) = h_jv_i$. So 
+    \begin{align*}
+       & \frac{\sum_h \exp(-E(v, h))\frac{\partial}{\partial w_{ij}}(-E(v, h))}{\sum_h \exp(-E(v, h))} - \frac{\sum_{v, h}\exp(-E(v,h))\frac{\partial}{\partial w_{ij}}(-E(v,h))}{Z} \\[0.5ex]
+       &=  \sum_h P(H = h|V = v)v_ih_j - \sum_{v,h}P(V = v, H = h)v_ih_j \\[0.5ex]
+       &= \mathbb{E}[V_iH_j|V = v] - \mathbb{E}[V_iH_j]
+    \end{align*}
+    \item $w_{00}, w_{10}, w_{20}$ and $w_{30}$ would be positive as all the films are in the action drama except ``The Notebook''. Similarly, $w_{11}$ and $w_{41}$ would be positive since ``Casablanca'' and ``The Notebook'' are in the romance genre.
 \end{enumerate}
 \textbf{4.} \begin{enumerate}[(a)]
     \item .
