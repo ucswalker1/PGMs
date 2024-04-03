@@ -34,15 +34,23 @@
             &= \frac{P(A, B, E)}{P(E)} = P(A, B | E)
         \end{align*}
         So $P(A, B | E) =  P(A|B, E)P(B | E)$ as needed. 
-        \item .
+        \item \begin{align*}
+            P(A|B,E) &= \frac{P(A, B, E)}{P(B, E)} = \frac{P(B|A,E)P(A|E)P(E)}{P(E)P(B|E)} \\[0.5ex]
+            &= \frac{P(B|A,E)P(A|E)}{P(B|E)} 
+        \end{align*}
     \end{enumerate}
     \item \begin{align*}
         P(X, Y | Z, W) &= \frac{P(X, Y, Z, W)}{P(Z, W)} = \frac{P(X, Y, W|Z)}{P(W | Z)} \\ 
-        &= \frac{P(X|Z)P(Y, W|Z)}{P(W|Z)} & (X \perp Y, W | Z) \\
+        &= \frac{P(X|Z)P(Y, W|Z)}{P(W|Z)} \\
         &= P(X|Z)P(Y|Z,W)
     \end{align*}
     So $(X \perp Y|Z, W)$
-    \item .
+    \item \begin{align*}
+        P(X, Y, W | Z) &= P(X, W | Z, Y)P(Y | Z) \\ 
+        &= P(X|Z, Y)P(W, Y | Z)P(Y|Z) = P(X|Z, Y)P(W, Y|Z) \\
+        &= P(X|Z)P(W, Y|Z)
+    \end{align*}
+    So $(X \perp Y, W | Z)$
     \item \begin{enumerate}[(i)]
         \item \begin{align*}
             P(H|E_1, E_2) &= \frac{P(H, E_1, E_2)}{P(E_1, E_2)} = \frac{P(H)P(E_1|H)P(E_2|E_1, H)}{P(E_1, E_2)} \\
@@ -201,5 +209,9 @@
         \text{Pa}_{X_j}' = \text{Pa}_{X_j} \cup \text{Pa}_{X_i} \cup \{X_k, \text{Pa}_{X_k} | X_k \in \text{Children}_{X_i}, X_j \notin \text{Pa}'_{X_k}\}
     \end{equation*}
     Where the last condition prevents adding redundant dependencies as the algorithm progresses. For non-children, $\text{Pa}_{X_j}' = \text{Pa}_{X_j}$. 
+\end{enumerate}
+\textbf{6.} \begin{enumerate}[(a)]
+    \item I did not collaborate 
+    \item 
 \end{enumerate}
 \end{document}
