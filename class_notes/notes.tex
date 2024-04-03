@@ -84,7 +84,7 @@ For a BN structure $G$, we define the global Markov independencies as the set of
         \item A feature is a function $f: \text{Val}(D_i) \mapsto \mathbb{R}$
         \item A set of features $F = \{f_1(D_1) \dots f_K(D_M)\}$ where $D_i$ is a complete subgraph in $H$
         \item A set of weights $\{w_1, \dots , w_M\}$ such that \begin{equation*}
-            \propto \exp \bigg(- \sum_{i = 1}^{M}w_if_i(D_i) \bigg)
+            P(X_1, \dots , X_n) \propto \exp \bigg(- \sum_{i = 1}^{M}w_if_i(D_i) \bigg)
         \end{equation*}
         \item Features and weights can be reused for different factors 
         \item Clasically, features we hand-designed and weights learned from data 
@@ -110,11 +110,66 @@ For a BN structure $G$, we define the global Markov independencies as the set of
     \end{itemize}
     \item Converting Bayesian Networks to Markov Networks \begin{itemize}
         \item Moralization coverts a BN to a Markov network 
-        \item The moral graph $\mathcal{M}(G)$ of a BN structure is an untirected graph over $V$ that contains an edge between $X_i$ and $X_j$ if:\begin{itemize}
+        \item The moral graph $\mathcal{M}(G)$ of a BN structure is an undirected graph over $V$ that contains an edge between $X_i$ and $X_j$ if:\begin{itemize}
             \item there is a direct edge between them 
             \item they are parents of the same node 
         \end{itemize}
+        \item Introduce one potential for each CPD $\phi_i(X_i, \text{Pa}_{X_i}^G) = P(X_i | \text{Pa}_{X_i}^G)$
+        \item $\mathcal{M}(G)$ is a minimal I-map for $G$. If $G$ is moral, then $\mathcal{M}(G)$ is a perfect I-map for $G$
     \end{itemize}
+    \item Converting a Markov network $H$ to a Bayesian network $G$ is harder, involves adding many edges \begin{itemize}
+        \item An undirected graph is \textbf{chordal} if every cycle of length 3 has a shortcut between non-consecutive nodes 
+        \item If $G$ is a minimal I-map for $H$, then $G$ must be chordal 
+        \item Generating a BN for a Markov network involves triangulating the graph by adding edges to make the graph chordal 
+        \item Triangulation results in a loss of independence relations present in $H$
+    \end{itemize}
+\end{itemize}
+\textbf{Lecture 5: Conditional Random Fields}
+\begin{itemize}
+    \item A \textbf{generative} model requires representing the joint distribuition $P(X, Y) = P(X|Y)P(Y)$, since we can generate $X$ given label $Y$ 
+    \item A \textbf{discriminative} model only requires a representation of the conditional distribuition $P(Y | X)$, so we can discriminate between different $Y$ without estimating $P(X)$
+    \item Ex. Naive Bayes ($X_i \perp X_{-i} | Y$) vs. Logistic Regression: $P(Y = 1 | x; w) = \frac{1}{1 + e^{-z}}$ \begin{itemize}
+        \item Every conditional distribution that can be represented via Naive Bayes can also be represented using the logistic model 
+        \item Ignoring dependencies might double-count evidence, i.e. spam classification and two words that always appear together (but are assumed independent)
+    \end{itemize}
+    \item Tradeoffs between Generative vs. Discriminative Models: \begin{itemize}
+        \item Missing data: Generative allow marginalization over unseen variables, e.g. $X = \{X_O, X_U\}, \\ P(Y|X_O) = \frac{\big(\sum_{X_U} P(X_O, X_U | Y)\big)P(Y)}{\sum_Y \sum_{X_U}P(X_O, X_U | Y) P(Y)}$ Discriminative models typically require all $X$ be observed 
+        \item Unlabeled data: Relativley easy with generative models, but difficult with discriminative models. 
+        \item Adding new classes: Generative models train class-conditioned distributions separatley. Discriminative models have interactions between parameters
+        \item Calibrated Probabilities: Discriminative models typically yield more accurate probablities. Generative models can be overconfident due to independence assumptions 
+        \item Data-dependent models: Discriminative models allow us to vary the model according to the data. Generative models employ data-independent parameterizations 
+    \end{itemize}
+    \item MLE of generative models is more efficient than training discriminative models, but may have higher asymptotic error. 
+\end{itemize}
+\textbf{Conditional Random Fields}: 
+\begin{itemize}
+    \item Undirected graph with nodes for $Y$ and $X$ (alt. partially directed, with $X$ the parent of $Y$)
+    \item Parametrized by a set of factors $\phi_1(D_1), \dots , \phi_m(D_m)$
+    \item Represent conditional distribution $P(Y|X)$ rather than the joint 
+    \item Avoid representing dist. over $X$, so no potientials involving only $X$ \begin{align*}
+        P(Y|X) &= \frac{1}{Z(X)}\prod_{i = 1}^{m}\phi_i(D_i) \\
+        Z(X) &= \sum_{Y}\prod_{i = 1}^{m}\phi_i(D_i)
+    \end{align*}
+    \item Just like Markov network, except the partition function depends on the observed variables $X$
+    \item The conditional distribution factiorizes as: \begin{align*}
+        P(Y|X) &= \frac{1}{Z(X)}\prod_{i = 1}^{k - 1}\phi_i(Y_i, Y_{i + 1})\prod_{i = 1}^{k}\phi(Y_i, X_i) \\
+        Z(X) &= \sum_{Y}\prod_{i = 1}^{k - 1}\phi_i(Y_i, Y_{i + 1})\prod_{i = 1}^{k}\phi(Y_i, X_i)
+    \end{align*}
+    \item Hidden Markov Model: widely used to model sequential random variables \begin{equation*}
+        P(X, Y) = \prod_{t = 1}^{T}P(Y_t | Y_{t - 1})P(X_t | Y_t)
+    \end{equation*} Which requires specifying the generative model. Instead, construct discriminative version by reversing direction of arrows, ex. Maximum Entropy Markov Model: \begin{equation*}
+        P(Y|X) = \prod_{t = 1}^{T}P(Y_t|Y_{t - 1},X_1, X_2, \dots X_T, X_g)
+    \end{equation*}
+    Where $X_g$ are global features. Suffers from label bias problem: observations at time $t$ do not influence states prior to $t$ per DAG structure. The Chain-Structured CRF version, uses undirected edges, which yields the model: 
+    \begin{equation*}
+        P(Y|X) = \frac{1}{Z(X)}\prod_{t = 1}^T \psi(Y_t|X) \prod_{t - 1}^{T - 1}\phi(Y_t, Y_{t + 1}| X)
+    \end{equation*} Requires the entire observation
+    \item Naive Markov Model: Assume $X$ and $Y$ are related by the following factors: $\phi_0(Y) = \exp\{w_0 \mathbf{1}[Y = 1]\}$ and $\phi_i(X_i, Y) = \exp\{w_i \mathbf{1}[X_i = 1, Y = 1]\}$. So the conditional distribution becomes: \begin{align*}
+        P(Y = 1|x_1, \dots, x_k) = \sigma \bigg( w_0 + \sum_{i = 1}^{k}w_ix_i \bigg)
+    \end{align*}
+    \item CRF Parametrization: Factors may depend on a large number of variables. Typically, parameterize factors using log-linear representation: \begin{equation*}
+        \phi_c(X_c, Y_c) = \exp(w_c^T f_c(X_c, Y_c))
+    \end{equation*}
 \end{itemize}
 
 
