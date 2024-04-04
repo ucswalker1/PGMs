@@ -40,8 +40,8 @@
         \end{align*}
     \end{enumerate}
     \item \begin{align*}
-        P(X, Y | Z, W) &= \frac{P(X, Y, Z, W)}{P(Z, W)} = \frac{P(X, Y, W|Z)}{P(W | Z)} \\ 
-        &= \frac{P(X|Z)P(Y, W|Z)}{P(W|Z)} \\
+        P(X, Y | Z, W) &= \frac{P(X|Y, W, Z) P(Y | W, Z) P(W | Z) P(Z)}{P(W | Z) P(Z)}\\ 
+        &= P(X|Y, W, Z)P(Y|Z,W)\\
         &= P(X|Z)P(Y|Z,W)
     \end{align*}
     So $(X \perp Y|Z, W)$
@@ -171,7 +171,7 @@
     \item $w_{00}, w_{10}, w_{20}$ and $w_{30}$ would be positive as all the films are in the action drama except ``The Notebook''. Similarly, $w_{11}$ and $w_{41}$ would be positive since ``Casablanca'' and ``The Notebook'' are in the romance genre.
 \end{enumerate}
 \textbf{4.} \begin{enumerate}[(a)]
-    \item 
+    \item While $P \vDash (X_1 \perp X_3, X_4| X_2)\ \& \ (X_3 \perp X_1, X_2| X_4)$, since we can independently determine the value of any node conditional on another, the Markov network implies $X_1$ is unconditionally independent of $X_3, X_4$, which does not hold in $P$, so the graph is not an I-map for $P$. This problem arises because $P$ is not a positive distribution. 
     \item For all $(X \perp Y\ |\ MB_H(X))$, $Y \notin MB_H(X)$ and $X \notin MB_H(Y)$, so $X - Y \notin H$ and thus $(X \perp Y\ |\ \mathbf{X} - \{X, Y \})$. So if $P \vDash I_{l}(H)$, then $P \vDash I_{p}(H)$.
     \item \begin{enumerate}[(i)]
         \item Let $U_1$ and $U_2$ be sets in $\mathcal{U}$. Then, \begin{align*}
