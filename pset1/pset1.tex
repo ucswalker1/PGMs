@@ -162,22 +162,35 @@
         &= \frac{\frac{\partial}{\partial w_{ij}}\sum_h \exp(-E(v, h))}{\sum_h \exp(-E(v,h))} - \frac{\frac{\partial}{\partial w_{ij}} Z}{Z} \\[0.5ex]
         &= \frac{\sum_h \exp(-E(v, h))\frac{\partial}{\partial w_{ij}}(-E(v, h))}{\sum_h \exp(-E(v, h))} - \frac{\sum_{v, h}\exp(-E(v,h))\frac{\partial}{\partial w_{ij}}(-E(v,h))}{Z} \\[0.5ex]
     \end{align*}
-    Where $\frac{\partial}{\partial w_{ij}}(-E(v, h)) = h_jv_i$. So 
+    Where $\frac{\partial}{\partial w_{ij}}(-E(v, h)) = v_ih_j$. So 
     \begin{align*}
-       & \frac{\sum_h \exp(-E(v, h))\frac{\partial}{\partial w_{ij}}(-E(v, h))}{\sum_h \exp(-E(v, h))} - \frac{\sum_{v, h}\exp(-E(v,h))\frac{\partial}{\partial w_{ij}}(-E(v,h))}{Z} \\[0.5ex]
+       & \frac{\sum_h  \exp(-E(v, h))\frac{\partial}{\partial w_{ij}}(-E(v, h))}{\sum_h \exp(-E(v, h))} - \frac{\sum_{v, h}\exp(-E(v,h))\frac{\partial}{\partial w_{ij}}(-E(v,h))}{Z} \\[0.5ex]
        &=  \sum_h P(H = h|V = v)v_ih_j - \sum_{v,h}P(V = v, H = h)v_ih_j \\[0.5ex]
        &= \mathbb{E}[V_iH_j|V = v] - \mathbb{E}[V_iH_j]
     \end{align*}
     \item $w_{00}, w_{10}, w_{20}$ and $w_{30}$ would be positive as all the films are in the action drama except ``The Notebook''. Similarly, $w_{11}$ and $w_{41}$ would be positive since ``Casablanca'' and ``The Notebook'' are in the romance genre.
 \end{enumerate}
 \textbf{4.} \begin{enumerate}[(a)]
-    \item .
+    \item 
     \item For all $(X \perp Y\ |\ MB_H(X))$, $Y \notin MB_H(X)$ and $X \notin MB_H(Y)$, so $X - Y \notin H$ and thus $(X \perp Y\ |\ \mathbf{X} - \{X, Y \})$. So if $P \vDash I_{l}(H)$, then $P \vDash I_{p}(H)$.
     \item \begin{enumerate}[(i)]
-        \item .
-        \item Let $U' = \mathbf{X} - \{X, Y\}$. So $P \vDash (X \perp \mathbf{X} - \{X\} - U'\ |\ U')$. However, $Y \notin U'$ so $Y \notin U^*$ and thus $Y \notin MB_P(X)$
-        \item If $Y \notin MB_P(X)$ then $Y \in \mathbf{X} - \{X\} - MB_P(X)$ and $(X \perp Y, \mathbf{X} - \{X, Y\} - MB_P(X)\ |\ MB_P(X) )$. By weak union,  $(X \perp Y\ |\ \mathbf{X} - \{X, Y\})$
-        \item .
+        \item Let $U_1$ and $U_2$ be sets in $\mathcal{U}$. Then, \begin{align*}
+            P \vDash (X \perp U_2 - U^*, \mathbf{X} - \{X\} - U^*\ |\ U_1 - U^*, U^*)\ \&  \ (X \perp U_1 - U^*, \mathbf{X} - \{X\} - U^*\ |\ U_2 - U^*, U^*)
+        \end{align*}
+        So by intersection and decomposition \begin{align*}
+            P \vDash (X \perp U_1 - U^*, U_2 - U^* \ |\ U^*)
+        \end{align*}
+        Combining the results \begin{align*}
+            P \vDash (X \perp U_1 - U^*, U_2 - U^*, \mathbf{X} - \{X\} - \{U_1, U_2\}\ |\ U^*)
+        \end{align*}
+        So $P \vDash (X \perp \mathbf{X} - \{X\} - U^*\ | \ U^*)$, and $U^* \in \mathcal{U}$. By definition, $MB_P(X)$ is the minimal set $U \in \mathcal{U}$, which is $U^*$. 
+        \item \begin{align*}
+            P &\vDash (X \perp Y | \mathbf{X} - \{X, Y\}) \\
+            P &\vDash (X \perp \mathbf{X} - \{X\} - (\mathbf{X} - \{X, Y\}) | \mathbf{X} - \{X, Y\})
+        \end{align*} 
+        So $P \vDash (X \perp \mathbf{X} - \{X\} - U |\ U)$. But, $Y \notin U$ so $Y \notin U^* =  MB_P(X)$
+        \item If $Y \notin MB_P(X)$ then $Y \in \mathbf{X} - \{X\} - MB_P(X)$ and $(X \perp Y, \mathbf{X} - \{X, Y\} - MB_P(X)\ |\ MB_P(X) )$. By weak union, $(X \perp Y\ |\mathbf{X} - \{X, Y\} - MB_P(X), MB_P(X))$. Thus, $(X \perp Y\ |\ \mathbf{X} - \{X, Y\})$
+        \item Parts (ii) and (iii) demonstrate that $MB_P(X)$ is exactly the set of neighbors of $X$ in $H$, and thus a minimal I-map for $P$.
     \end{enumerate}
 \end{enumerate}
 \textbf{5.} \begin{enumerate}[(a)]
@@ -205,10 +218,10 @@
         \end{tikzpicture}
     \end{center}
     The above Bayesian Network is a minimal I-map for the marginal distribution over the remaining variables. When removing $A$ from the original network, we preserve the active trails from $B$ and $E$ to $M$ and $C$ that previously passed through $A$. Furthermore, in the original network, if conditioning on $M$, due to the v-structure, there was a dependency between $S$ and $C$ (the symmetric dependency between $W$ and $M$ when conditioning on $C$ is also preserved with this edge). The dependency between $M$ and $C$ (common cause $A$) in the orginal network is preserved without loss of generality by a new edge from $M$ to $C$. 
-    \item We can generalize the above process as follows. When removing $X_i$, for each child of $X_i$ in $BN$, we add edges from the parents of $X_i$, an edge from the other decendents of $X_i$, and an edge from the parents of the other children of $X_i$. Formally, for each child $X_j \in \text{Children}_{X_i}$ \begin{equation*}
+    \item We can generalize the above process as follows. When removing $X_i$, for each child of $X_i$ in $BN$, we add edges from the parents of $X_i$, an edge from the other decendents of $X_i$, and an edge from the parents of the other children of $X_i$. Formally, let Pa$_{X_j}'$ denote the parents of $X_j$ in $BN'$. For each child $X_j \in \text{Children}_{X_i}$ \begin{equation*}
         \text{Pa}_{X_j}' = \text{Pa}_{X_j} \cup \text{Pa}_{X_i} \cup \{X_k, \text{Pa}_{X_k} | X_k \in \text{Children}_{X_i}, X_j \notin \text{Pa}'_{X_k}\}
     \end{equation*}
-    Where the last condition prevents adding redundant dependencies as the algorithm progresses. For non-children, $\text{Pa}_{X_j}' = \text{Pa}_{X_j}$. 
+    Where the last condition prevents adding redundant dependencies as the algorithm progresses, for instance, over a topological ordering of $BN$. For non-children of $X_i$ in $BN$, $\text{Pa}_{X_j}' = \text{Pa}_{X_j}$. 
 \end{enumerate}
 \textbf{6.} \begin{enumerate}[(a)]
     \item I did not collaborate 
