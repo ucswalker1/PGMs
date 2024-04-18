@@ -172,7 +172,13 @@
     A dynamic programming algorithm would be, for each $i \in [n - 2]$, cache the result of $P(X_i, X_{i + 2})$, and then use this to iterativley compute $P(X_i, X_{i + 3}), P(X_i, X_{i + 3}), \dots ,P(X_i, X_{n})$ using the above recurrence relation (and caching the last computed result). This process would take $O(nk)$ time for each $i$, so the total running time of the algorithim is $O(n^2k)$.
 \end{enumerate}
 \textbf{4.} \begin{enumerate}[(a)]
-    \item x 
+    \item \begin{align*}
+        \mathcal{N}^{-1}(x; \eta_1, \lambda_1) \cdot \mathcal{N}^{-1}(x; \eta_1, \lambda_1) &= \sqrt{\frac{\lambda_1}{2\pi}}\exp(-\frac{1}{2}(\lambda_1x^2 - 2x\eta_1 + \lambda_1\mu^2)) \cdot \sqrt{\frac{\lambda_2}{2\pi}}\exp(-\frac{1}{2}(\lambda_2x^2 - 2x\eta_2 + \lambda_2\mu^2)) \\
+        &\propto \exp(-\frac{1}{2}((\lambda_1x^2 - 2x\eta_1) + (\lambda_2x^2 - 2x\eta_2))) \\
+        &= \exp(-\frac{1}{2}((\lambda_1 + \lambda_2)x^2 + 2x(\eta_1 - \eta_2))) \\
+        % &= \exp(-\frac{1}{2}(x^2 + 2x\frac{\eta_1 + \eta_2}{\lambda_1 + \lambda_2} + \frac{\lambda_1\eta_1 + \lambda_2\eta_2}{\lambda_1 + \lambda_2})) \\
+        &= \exp(-\frac{1}{2}(\bar{\lambda}x^2 + 2x\bar{\eta})) \propto \mathcal{N}^{-1}(x;\bar{\eta}, \bar{\lambda})
+    \end{align*}
     \item \begin{align*}
         m_{j \rightarrow i} &= \sum_{x_j} \psi_j(x_i, x_j) \prod_{k \in \text{Nb}(j) \setminus \{i\}}m_{k \rightarrow j} \\
         &= \sum_{x_j} \phi(x_j) \phi(x_i, x_j) \prod_{k \in \text{Nb}(j) \setminus \{i\}} \sum_{x_k} \exp(-\frac{1}{2}(\Lambda_{kk}x_k^2 + 2\eta_kx_k)  - \Lambda_{kj}x_kx_j) \prod_{l \in \text{Nb}(k)\setminus \{j\}} m_{l \rightarrow k}(x_k) \\
@@ -311,6 +317,6 @@
 \end{enumerate}
 \textbf{6}\begin{enumerate}[(a)]
     \item I did not collaborate 
-    \item 
+    \item 10 - 20 hours
 \end{enumerate}
 \end{document}
