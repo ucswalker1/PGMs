@@ -53,10 +53,17 @@
         &= \argmin_\theta \ D(P || Q(X ; \theta))
     \end{align*}
     Therefore, the MLE solution $\theta^*$ minimizes the KL-Divergence $D(P || Q(X ; \theta))$, and is equivalent to solving for the M-projection $D(P||Q)$. 
+    \item 
 \end{enumerate}
 \textbf{2.} 
 \begin{enumerate}[(a)]
-    \item 
+    \item $\mathcal{M} \subseteq Local[\mathcal{U}]$, since any valid distribution $P$ over $\mathcal{X}$ will satisfy the constraints of the local-consistency polytope. For a clique tree $\cal{T}$, under the constraints of the local-consistencey polytope, the pseudo marginals must be locally consistent, \begin{align*}
+        \mu_{i,j}(S_{i,j}) = \sum_{C_i - S_{i,j}}\beta_i(C_i) = \sum_{C_j - S_{i,j}}\beta_i(C_j)
+    \end{align*}
+    which implies that the clique tree is calibrated. So we have the clique tree invariant \begin{align*}
+        \Tilde{P}_{\Phi}(\mathcal{X}) = \frac{\prod_i \beta_i (C_i)}{\prod_{i,j} \mu_{i,j}(S_{i,j})}
+    \end{align*} where $\beta_i(C_i) \propto \tilde{P}_{\Phi}(C_i)$ and $\mu_{i,j}(S_{i,j}) \propto \tilde{P}_{\Phi}(S_{i,j})$. Therefore, the clique and sepset marginals define a valid distribution over $\mathcal{X}$, and $Local[\mathcal{U}] \subseteq \mathcal{M}$. So we have that $Local[\mathcal{U}]$ is equivalent to $\cal{M}$ for a clique tree $\cal{T}$.
+    
     \item \textcolor{white}{{x}}
     \begin{figure}[th]
         \centering
