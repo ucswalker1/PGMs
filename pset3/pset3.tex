@@ -3,6 +3,8 @@
 \usepackage{multirow}
 \usepackage{booktabs}
 \usepackage{caption}
+\usepackage{graphicx}
+\usepackage{subcaption}
 
 \DeclareMathOperator*{\argmax}{arg\,max}
 \DeclareMathOperator*{\argmin}{arg\,min}
@@ -192,9 +194,65 @@
             \end{tabular}
         \end{minipage}
     \end{table}
+\item \textcolor{white}{{x}} 
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.5]{adjmat.png}
+    \caption{Visualization of Superpixel Adjacency Matrix}
+\end{figure}
+\item \textcolor{white}{{x}} 
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{beta2c.png}
+    \caption{Result of Loopy Belief Propogation for $\beta = 2$}
+\end{figure}
+\item \textcolor{white}{{x}} 
+\begin{figure}[H]
+    \captionsetup[subfigure]{labelformat=empty}
+    \centering
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{beta0.png}
+        \caption{$\beta = 0$}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{beta2c.png}
+        \caption{$\beta = 2$}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{beta4.png}
+        \caption{$\beta = 4$}
+    \end{subfigure}
+    \\
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{beta6.png}
+        \caption{$\beta = 6$}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{beta8.png}
+        \caption{$\beta = 8$}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{beta10.png}
+        \caption{$\beta = 10$}
+    \end{subfigure}
+    \caption{Result of Loopy Belief Propogation for $\beta \in [0, 10]$}
+    \label{fig:grid_of_images}
+\end{figure}
+$\beta = 0$ is special since all of the edge potentials are 1. The result of this is that there is less convergence between the different regions in the image, as we can see small areas with the background label even when the surrounding area is labeled foreground. As $\beta$ increaces, it appears that there is convergence towards larger continuous regions of the image with a single label. As $\beta \rightarrow \infty$, I would expect this behavior to continue, and the different labeled segments to converge, possibly until the entire image is labeled foreground or background.  
 \end{enumerate}
 \textbf{5.} \begin{enumerate}[(a)]
-    \item 
+    \item I did not collaborate.
+    \item 7 - 15 hours. 
 \end{enumerate}
 
 \end{document}
