@@ -1,0 +1,195 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{hyperref}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+\usepackage{amsfonts}
+
+\usepackage{tikz}
+\usetikzlibrary{fit,positioning,shapes}
+
+\usepackage[shortlabels]{enumitem}
+
+\usepackage{algorithm}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{algpseudocode}
+
+\textwidth=7.6in
+\textheight=9.9in
+\topmargin=-.9in
+\headheight=0in
+\headsep=.5in
+\hoffset=-1.5in
+\setlength\parindent{0pt}
+
+
+\begin{document}
+
+\begin{center}
+    \Large{\textbf{Problem Set 4 Solutions}} \\[0.25ex]
+    Calvin Walker
+\end{center}
+
+\textbf{1.}
+\begin{enumerate}[(a)]
+    \item Letting $\theta = (\mu, \sigma^2)$\begin{align*}
+        \theta^* &= \argmax_{\theta} L(\theta : D) \\
+        &= \argmax_{\theta} \prod_{m}^M \mathcal{N}(x^{(m)}; \theta) \\ 
+        &= \argmin_{\theta}\sum_{m} - \log\Bigg(\frac{1}{\sqrt{2\pi}\sigma}\exp\bigg(- \frac{(x^{(m)} - \mu)^2}{2\sigma^2}\bigg)\Bigg) \\
+    \end{align*}
+    Minimizing with respect to $\mu$ and $\sigma^2$: \begin{align*}
+        \frac{\partial}{\partial \mu} &= 0 = M \mu - \sum_{m} x^{(m)} & \frac{\partial}{\partial \sigma^2} &= 0 = \frac{-M}{\sigma^2} + \frac{1}{\sigma^4}\sum_{m}(x^{(m)} - \mu)^2
+    \end{align*}
+    So we have \begin{align*}
+        \mu_{MLE} = \frac{1}{M}\sum_{m}x^{(m)} & & \sigma^2_{MLE} = \frac{1}{M}\sum_{m}(x^{(m)} - \mu_{MLE})^2
+    \end{align*}
+    \item \begin{align*}
+        P(\mu_x | D) &\propto P(\mu_x) P(D | \mu_x) \\[0.5ex]
+        & \propto \exp \biggl( \frac{-\lambda_{\mu_x}(\mu_x - \mu_{\mu_x})^2}{2}\biggr) \exp \biggl( \frac{-\lambda_{x}}{2 } \sum_{m}(x^{(m)} - \mu_{x})^2\biggr) \\[0.5ex]
+        &= \exp \biggl(-\frac{\lambda_{\mu_x}}{2}(\mu_x^2 - 2\mu_x\mu_{\mu_x} + \mu_{\mu_x}^2)  - \frac{\lambda_{x}}{2}\sum_m(x^{(m)^2} - 2x^{(m)}\mu_{x} + \mu_x^2) \biggr) \\[0.5ex]
+        &= \exp \biggl(-\frac{\mu_x^2}{2}(\lambda_{\mu_x} + M\lambda_x) + \mu_x(\lambda_{\mu_x} \mu_{\mu_x} + \lambda_x\sum_m x^{(m)}) - \frac{1}{2}(\lambda_{\mu_x}\mu_{\mu_x}^2 + \lambda_x \sum_{m}x^{(m)^2}) \biggr) \\
+        &= \exp \biggl(\frac{-\lambda_{\mu_x}'}{2}(\mu_x^2 - 2\mu_x\mu_{\mu_x}' + \mu_{\mu_x}'^2)\biggr)
+    \end{align*}
+    Which is of the form $\mathcal{N}(\mu_x ; \mu_{\mu_x}', (\lambda_{\mu_x}')^{-1})$, where: \begin{align*}
+        -\frac{1}{2}\lambda_{\mu_x}'\mu_x^2 &= - \frac{\mu_x^2}{2}(\lambda_{\mu_x} + M\lambda_x) \\
+        \lambda_{\mu_x}' &= \lambda_{\mu_x} + M\lambda_x
+    \end{align*} and 
+    \begin{align*}
+        - \lambda_{\mu_x}' \mu_x \mu_{\mu_x}' &= \mu_x (\mu_{\mu_x}\lambda_{\mu_x} + \lambda_x\sum_m x^{(m)})\\
+        \mu_{\mu_x}' &= \frac{\lambda_{\mu_x}}{\lambda_{\mu_x}'}\mu_{\mu_x} + \frac{M\lambda_x}{\lambda_{\mu_x}'}\mathbb{E}_D[x]
+    \end{align*}
+    \item \begin{enumerate}[(i)]
+        \item \begin{align*}
+            P(\lambda_x | D, \mu) &\propto P(\lambda_x|\mu)P(D|\lambda_x, \mu) \\
+            &\propto \frac{\beta^{\alpha}}{\Gamma(\alpha)}\lambda_x^{\alpha}\exp(-\beta\lambda_x) \prod_m \biggl(\lambda_x^{1/2}\exp\bigg(-\frac{\lambda_x}{2}(x^{(m)} - \mu)^2\bigg)\biggr) \\ 
+            &\propto \lambda_x^{\alpha + \frac{1}{2}M}\exp\biggl(-\beta\lambda_x - \frac{1}{2}\lambda_x\sum_m(x^{(m)} - \mu)^2\biggr) \\
+            &= \lambda_x^{\alpha + \frac{1}{2}M}\exp\biggl(-(\beta - \frac{1}{2}\sum_m(x^{(m)} - \mu)^2)\lambda_x\biggr) 
+        \end{align*}
+        Which is of the form Gamma$(\alpha', \beta')$, with $\alpha' = \alpha + \frac{1}{2}M$ and $\beta' = \beta + \frac{1}{2}\sum_{m}(x^{(m)} - \mu)^2$
+        \item Since $P(\lambda_x | D, \mu) \sim $ Gamma$(\alpha', \beta')$, we have
+        \begin{align*}
+            \mathbb{E}[\lambda_x] = \frac{\alpha + \frac{1}{2}M}{\beta + \frac{1}{2}\sum_m(x^m - \mu)^2} & & \text{Var}[\lambda_x] = \frac{\alpha + \frac{1}{2}M}{(\beta + \frac{1}{2}\sum_m(x^m - \mu)^2)^2}
+        \end{align*}
+        \dots
+    \end{enumerate}
+    \item
+    \begin{enumerate}[(i)]
+    \item \begin{align*}
+        \mathcal{N}\biggl(\begin{bmatrix}
+            x_1 \\
+            x_2
+        \end{bmatrix}; 0 , \begin{bmatrix}
+            \Sigma_{11} & \Sigma_{12} \\ 
+            \Sigma_{21} & \Sigma_{22}
+        \end{bmatrix}
+        \biggr) &\propto \exp\biggl(-\frac{1}{2}\begin{bmatrix}
+            x_1 \\
+            x_2
+        \end{bmatrix}^T\begin{bmatrix}
+            \Sigma_{11} & \Sigma_{12} \\ 
+            \Sigma_{21} & \Sigma_{22}
+        \end{bmatrix}^{-1}\begin{bmatrix}
+            x_1 \\
+            x_2
+        \end{bmatrix}
+        \biggr)
+    \end{align*}
+    Which we can express in terms of the Schur complement as: 
+    \begin{align*}
+        &= \exp\biggl(-\frac{1}{2}\begin{bmatrix}
+            x_1 \\
+            x_2
+        \end{bmatrix}^T\begin{bmatrix}
+            I & 0 \\ 
+            -\Sigma_{22}^{-1}\Sigma_{21} & I
+        \end{bmatrix}
+        \begin{bmatrix}
+            (\Sigma_{11} - \Sigma_{12}\Sigma_{22}^{-1}\Sigma_{21})^{-1}& 0 \\ 
+            0 & \Sigma_{22}^{-1}
+        \end{bmatrix}
+        \begin{bmatrix}
+            I & -\Sigma_{12}\Sigma_{22}^{-1} \\ 
+            0 & I
+        \end{bmatrix}
+        \begin{bmatrix}
+            x_1 \\
+            x_2
+        \end{bmatrix}
+        \biggr) \\[1.0ex]
+        &= \exp \biggl(-\frac{1}{2}(x_1 - \Sigma_{12}\Sigma_{22}^{-1}x_2)^T(\Sigma_{11} - \Sigma_{12}\Sigma_{22}^{-1}\Sigma_{21})^{-1}(x_1 - \Sigma_{12}\Sigma_{22}^{-1}x_2)\biggr)\exp\biggl(-\frac{1}{2}x_2^T\Sigma_{22}^{-1}x_2\biggr)
+    \end{align*}
+    We can see that this takes the form of the product of the conditional $P(x_1|x_2)$ and the marginal $P(x_2)$, so \begin{align*}
+        \exp \biggl(-\frac{1}{2}(x_1 - \Sigma_{12}\Sigma_{22}^{-1}x_2)^T(\Sigma_{11} - \Sigma_{12}\Sigma_{22}^{-1}\Sigma_{21})^{-1}(x_1 - \Sigma_{12}\Sigma_{22}^{-1}x_2)\biggr) &= \exp\biggl(-\frac{1}{2}(x_1 - \mu_{1|2})^T\Sigma_{1|2}^{-1}(x_1 - \mu_{1|2})\biggr) \\
+        &= P(x_1|x_2)
+    \end{align*}
+    Where $\mu_{1|2} = \Sigma_{12}\Sigma_{22}^{-1}x_2$ and $\Sigma_{1|2} = \Sigma_{11} - \Sigma_{12}\Sigma_{22}^{-1}\Sigma_{21}$
+    \item We can see from the Schur complement that:  
+    \begin{align*}
+        \Lambda = \Sigma^{-1} = 
+        \begin{bmatrix}
+            (\Sigma_{11} - \Sigma_{12}\Sigma_{22}^{-1}\Sigma_{21})^{-1} &  \dots \\ 
+            \dots &  \dots
+        \end{bmatrix} = 
+        \begin{bmatrix}
+            \Lambda_{11} & \Lambda_{12} \\ 
+            \Lambda_{21} & \Lambda_{22}
+        \end{bmatrix}
+    \end{align*}
+    and from (i) we know that $\Sigma_{1|2} = \Sigma_{11} - \Sigma_{12}\Sigma_{22}^{-1}\Sigma_{21}$. Thus,
+    \begin{align*}
+        \text{Var}(x_1|x_2) = \Sigma_{11} - \Sigma_{12}\Sigma_{22}^{-1}\Sigma_{21} = \Lambda_{11}^{-1}
+    \end{align*}
+    \item We can see in part (i) that if $\Lambda_{12}$ = 0, in the canonical parameterization, the first term becomes only a function of $x_1$, so the distribution decomposes as $P(x_1)P(x_2)$.
+    \end{enumerate}
+    \item \begin{align*}
+        L(\Lambda : D) &= \prod_m 2\pi^{n/2}|\Lambda|^{1/2}\exp\big(-\frac{1}{2}x^{(m),T}\Lambda x^{(m)}\big) \\ 
+        &= 2\pi^{Mn/2}|\Lambda|^{M/2} \prod_m \exp\big(-\frac{1}{2}x^{(m),T}\Lambda x^{(m)}\big)
+    \end{align*}
+    Since $x^TAx = \text{tr}(xx^TA)$, \begin{align*}
+        L(\Lambda : D) &= 2\pi^{Mn/2}|\Lambda|^{M/2} \exp\bigg(\text{tr}\big(-\frac{1}{2}\sum_m x^{(m)}x^{(m),T}\Lambda\big)\bigg)
+    \end{align*}
+    Taking the log, 
+    \begin{align*}
+        \ell(\Lambda : D) &= -\frac{Mn}{2}\log 2\pi + \frac{M}{2}\log|\Lambda| - \frac{M}{2}\text{tr}\bigg(\frac{1}{M}D^TD\Lambda\bigg) \\
+        &\propto \log \text{det}(\Lambda) - \text{tr}(S\Lambda)
+    \end{align*}
+    \item The maximum liklihood estimate for $\Lambda$ is given by: \begin{align*}
+        \Lambda^{*} = \argmin_{\Lambda} \text{tr}(S\Lambda) - \log \text{det}(\Lambda)
+    \end{align*} So, 
+    \begin{align*}
+        \frac{\partial \ell}{\partial \Lambda} = 0 = \ &S - \Lambda^{-1} \\[1.0ex]
+        \Lambda_{MLE} &= S^{-1}
+    \end{align*}
+\end{enumerate}
+\textbf{2.}\begin{enumerate}[(a)]
+    \item 
+    \item \begin{align*}
+        H(X\ |\ \mathbf{X} - X) &= -\sum_{X, \mathbf{X} - X}P(X, \mathbf{X} - X) \log P(X\ |\ \mathbf{X} - X) \\
+        &= -\sum_{X,  \mathbf{X} - X - \text{MB}(X), \text{MB}(X)}P(X, \mathbf{X} - X - \text{MB}(X), \text{MB}(X)) \log P(X\ |\  \mathbf{X} - X - \text{MB}(X), \text{MB}(X))
+    \end{align*}
+    Where $P(X\ |\  \mathbf{X} - X - \text{MB}(X), \text{MB}(X)) = P(X\ |\ \text{MB}(X))$ and (by chain rule), \begin{align*}
+        P(X, \mathbf{X} - X - \text{MB}(X), \text{MB}(X)) &= P(X | \mathbf{X} - X - \text{MB}(X), \text{MB}(X))\ P(\mathbf{X} - X - \text{MB}(X) | \text{MB}(X))\ P(\text{MB}(X)) \\
+        &= P(X\ |\ \text{MB}(X))\ P(\mathbf{X} - X - \text{MB}(X)\ |\ \text{MB}(X))\ P(\text{MB}(X))
+    \end{align*}
+    So, \begin{align*}
+        H(X\ |\ \mathbf{X} - X) &= -\sum_{X,  \mathbf{X} - X - \text{MB}(X), \text{MB}(X)}P(X\ |\ \text{MB}(X))P(\mathbf{X} - X - \text{MB}(X)\ |\ \text{MB}(X))P(\text{MB}(X)) \log P(X\ |\ \text{MB}(X)) \\
+        &= -\sum_{X, \text{MB}(X)}P(X, \text{MB}(X))\log P(X\ |\ \text{MB}(X)) \\
+        &= H(X\ |\ \text{MB}(X))
+    \end{align*}
+    \item Since $H(A\ | B, C) \leq H(A | B)$ for disjoint sets $A, B, C$, we can minimize the conditional entropy $H(X|Y)$ by conditioning on the rest of the nodes. So $H(X|\mathbf{X} - X) = H(X|\mathbf{X} - X - \text{MB}(X)\text{MB}(X)) = H(X|, \text{MB}(X))$ minimizes the conditional entropy. Thus, $\text{MB}(X) = \argmin_Y H(X|Y)$.
+    \item For each node $X$, compute its Markov Blanket as MB$(X) = \argmin_Y H(X|Y)$. We have $n$ nodes, and there are $\binom{n}{d}$ possible Markov Blankets for each node, the conditional entropy of which takes $c$ complexity to compute. So the algorithm runs in $O(n\binom{n}{d}c)$.
+
+\end{enumerate}
+\textbf{3.}\begin{enumerate}[(a)]
+    \item 
+\end{enumerate}
+
+\end{document}
