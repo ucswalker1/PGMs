@@ -84,10 +84,9 @@
 
 \begin{abstract}
     In randomized experiments, it is often assumed that the response of a given unit only depends on its own characterisitcs and the treatment to which it is assigned. However, there are numerous situations of interest to researchers 
-    where this may not be a plausible assuption, particularly when there is social interaction between individuals in an experiment, and the ability to identify and separate the effects of treatment assigment and peer influence have important implications. 
-    This paper presents a framework for reliably identifying and estimating causal effects in experimental settings where there is potential interference between units. The framework consists of 
+    where this may not be a plausible assuption, particularly when there is social interaction between individuals in an experiment, and the ability to separately identify the effects of treatment assigment and peer influence have important implications. 
+    This paper presents a general framework for reliably identifying and estimating causal effects in experimental settings where there is potential interference between units. The framework consists of 
     (i) learning the potential for interference between connected units, (ii) a probabilistic graphical model for estimating individuals' exposure to treated units, and (iii) methods that make use of estimated exposures to compute causal effects of interest. We then evaluate the performance of the proposed framework on by simulating synthetic experimental data on a variety of real world social networks.
-
 \end{abstract}
 
 
@@ -110,7 +109,22 @@ papers accepted to NeurIPS.
 
 \section{Setting and Assumptions}
 
+We consider the setting of a randomized experiment on a social network of $N$ nodes. The network, $G = (V, E)$, is observed, and may or may not contain node-level covariates or edge strengths. 
+Let $\mathbf{Z} = (Z_1, Z_2, \dots ,Z_N)$ be a treatment assigment vector over $N$ units, where $Z_i \in \{0, 1\}$ specifies which of the possible treatments unit $i$ receives. 
+We assume that $P(Z_i = 1)$ is the same for all $i \in \{N\}$, so treatment assigment is unconfounded. We define $\mathbf{C} = (C_1, C_2, \dots, C_N)$ to be a latent exposure vector, where $C_i \in \{0, 1\}$ specifies if unit $i$ is exposed to the treatment via social interaction. 
+Since we assume treated units cannot be further exposed, $\mathbf{Z} \times \mathbf{C} = 0$. If we could observe $\mathbf{C}$, then our work would be done, since we could partition the units into treatment, exposured, and control groups, and employ classic techniques to infer their differences in outcome. 
+
+Instead, we define $\pi_i(\mathbf{Z}) = P(C_i = 1)$ to be the expsoure probability for unit $i$ given some instantiation of the experiment $\mathbf{Z}, \mathbf{C}$. Since an individual's social exposure to the treatment depends on the random assigment in $G$, so does $\pi_i(\mathbf{Z})$. For simplicity, we assume that
+the effects of both treatment assigment and social exposure are homogenous. Furthermore, we assume that social interaction, and thus social exposure to the treatment, only occurs through the edges $E$ of $G$. However, we make no assumption on the form of such exposures \dots
+
 \section{Estimating Exposures and Causal Effects}
+
+We propose modeling the spread of influence in the social network as a Pairwise Markov Random Field, defined as $B = (P, H)$, where $H = (V, E)$ is isomorphic with the social network $G$, defined by the bijection $f: G(V) \mapsto H(V)$ where $f(v_i) = X_i \sim $ Bernoulli$(p)$, i.e. $H$ is an undirected graph with the skeleton of $G$ where each node in $H(V)$ is a Bernoulli random variable. 
+$P$, then, is defined as a Gibbs distribution that factorizes over $H$: \\
+\begin{displaymath}
+  P(X_1, X_2, \dots, X_n) = \frac{1}{Z}\prod_{i \in V} \phi_i(X_i)\prod_{(i, j) \in E}\phi_{i,j}(X_i, X_j)
+\end{displaymath}
+
 
 \section{Simulations}
 
