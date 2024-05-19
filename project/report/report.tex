@@ -92,41 +92,94 @@
 
 \section{Introduction}
 
-
-Please read the instructions below carefully and follow them faithfully. \textbf{Important:} This year the checklist will be submitted separately from the main paper in OpenReview, please review it well ahead of the submission deadline: \url{https://neurips.cc/public/guides/PaperChecklist}.
-
-
-\subsection{Style}
-
-
-\paragraph{Preprint option}
-If you wish to post a preprint of your work online, e.g., on arXiv, using the
-NeurIPS style, please use the \verb+preprint+ option. This will create a
-nonanonymized version of your work with the text ``Preprint. Work in progress.''
-in the footer. This version may be distributed as you see fit, as long as you do not say which conference it was submitted to. Please \textbf{do
-  not} use the \verb+final+ option, which should \textbf{only} be used for
-papers accepted to NeurIPS. 
-
 \section{Setting and Assumptions}
 
 We consider the setting of a randomized experiment on a social network of $N$ nodes. The network, $G = (V, E)$, is observed, and may or may not contain node-level covariates or edge strengths. 
 Let $\mathbf{Z} = (Z_1, Z_2, \dots ,Z_N)$ be a treatment assigment vector over $N$ units, where $Z_i \in \{0, 1\}$ specifies which of the possible treatments unit $i$ receives. 
 We assume that $P(Z_i = 1)$ is the same for all $i \in \{N\}$, so treatment assigment is unconfounded. We define $\mathbf{C} = (C_1, C_2, \dots, C_N)$ to be a latent exposure vector, where $C_i \in \{0, 1\}$ specifies if unit $i$ is exposed to the treatment via social interaction. 
-Since we assume treated units cannot be further exposed, $\mathbf{Z} \times \mathbf{C} = 0$. If we could observe $\mathbf{C}$, then our work would be done, since we could partition the units into treatment, exposured, and control groups, and employ classic techniques to infer their differences in outcome. 
+Here, we assume that all treated units are exposed, such that $Z_i \times C_i = 1$, but that treatment units do not experience further spillover effects. %TODO: go more indepth on this 
+If we could observe $\mathbf{C}$, then our work would be done, since we could partition the units into treatment, exposured, and control groups, and employ classic techniques to infer their differences in outcome. 
 
 Instead, we define $\pi_i(\mathbf{Z}) = P(C_i = 1)$ to be the expsoure probability for unit $i$ given some instantiation of the experiment $\mathbf{Z}, \mathbf{C}$. Since an individual's social exposure to the treatment depends on the random assigment in $G$, so does $\pi_i(\mathbf{Z})$. For simplicity, we assume that
 the effects of both treatment assigment and social exposure are homogenous. Furthermore, we assume that social interaction, and thus social exposure to the treatment, only occurs through the edges $E$ of $G$. However, we make no assumption on the form of such exposures \dots
 
 \section{Estimating Exposures and Causal Effects}
 
-We propose modeling the spread of influence in the social network as a Pairwise Markov Random Field, defined as $B = (P, H)$, where $H = (V, E)$ is isomorphic with the social network $G$, defined by the bijection $f: G(V) \mapsto H(V)$ where $f(v_i) = X_i \sim $ Bernoulli$(p)$, i.e. $H$ is an undirected graph with the skeleton of $G$ where each node in $H(V)$ is a Bernoulli random variable. 
+We propose modeling the spread of influence in the social network as a Pairwise Markov Random Field, defined as $B = (P, H)$, where $H = (V, E)$ is an isomporphism of the social network $G$, given by the bijection $f: G(V) \mapsto H(V)$ where $f(v_i) = X_i \sim $ Bernoulli$(p)$, i.e. $H$ is an undirected graph with the skeleton of $G$ where each node in $H(V)$ is a Bernoulli random variable. 
 $P$, then, is defined as a Gibbs distribution that factorizes over $H$: \\
 \begin{displaymath}
-  P(X_1, X_2, \dots, X_n) = \frac{1}{Z}\prod_{i \in V} \phi_i(X_i)\prod_{(i, j) \in E}\phi_{i,j}(X_i, X_j)
+  P(X_1, X_2, \dots, X_n) = \frac{1}{Z}\prod_{i \in V} \phi_i(X_i)\prod_{(i, j) \in E}\phi_{i,j}(X_i, X_j) \\[0.5ex]
 \end{displaymath}
+By having each individual represented as a bernoulli random vairable in $H$, we can reformulate the problem of estimating the exposure probability for node $i$,  $\pi_i(\mathbf{Z})$, into 
+an inference problem, where we seek to infer marginal probability distributions for each node. Observe that for any treated unit, they are assumed to be already exposed, so $X_i = 1$ for all individuals $i$ where $Z_i = 1$. 
+This observation acts as our evidence in $P$ when performing inference on the unknown marginal distributions of the other nodes in $H$. Formally, we infer the posterior distribution $P(X_i\ |\ e)$, where $e = \{X_i = 1\ |\ Z_i = 1\}$. 
+This reformulation allows us to use a host of existing inference algorithms to learn the posterior marginals. 
+%Algorithm 1: Sum-Product BP 
 
+
+
+% In the case of larger social networks where exact inference may be intractable, approximation 
+% algorithms can be used, although this paper does not  
+
+\subsection{Unary and Edge Potentials}
+
+Having refomulated estimating $\pi_i(\mathbf{Z})$ as inference of marginals in a Pairwise MRF, 
+properly defining the edge and unary potentials in $H$ becomes an important specification. In this section, 
+we dicuss several potential approaches. In the setting considered by this paper, treatment assigment is unconfounded, so 
+the unary potentials $\phi_i(X_i)$, are uniform across the nodes such that $\phi_i(X_i = 1) = \phi_i(X_i = 0) \ \forall i$. However, 
+in the case that treatment assigment is, for instance, confounded by covariates, it may make sense to use the unary potentials as a prior on similarity 
+with the treatment group, since influence may flow to ``similar'' nodes more easily. 
+
+The edge potentials $\phi_i(X_i, X_j)$ have an even more intuitive interpretation, representing the potential for influence, or ``strength'' of a social connection between two nodes in $H$. Here, 
+we propose two possible approaches for specifying the edge potentials. Both involve first specifying the probability of each edge in the social network. The first is that, given domain knowledge within the experiment, the researcher may have a prior on the distribution of 
+edge probabilities, and can make use of this prior belief. For instance, let $p_{i,j}$ be the probability of an edge between node 
+$i$ and node $j$. A reasonable prior could be $p_{i,j} \sim $ Beta$(5, 5)$. This belief could be incorporated by initializing the 
+edge potentials according to this distribution. The next is a latent variable model introduced by Handcock et al. \label{1}[1]. Where we model $p_{i,j}$ using a logistic regression where the probability of an edge depends on euclidean distance in latent space: 
+\begin{displaymath}
+  \mbox{log-odds}(p_{i,j}) = \beta X_{i,j} - ||z_i - z_j||^2
+\end{displaymath}
+Where $z_i$ and $z_j$ are node $i$ and node $j$'s respective positions in latent space, and $X_{i,j}$ is some vector valued edge covariates. Here, it is assumed that the existence of an edge is independent of other edges. 
+Handcock jointly estimates the parameter $\beta$ and the latent $z_i$'s using MCMC, with prior: \begin{displaymath}
+  z_i \sim \sum_{g = 1}^{G}\lambda_g \mbox{MVN}_d(\mu_g, \sigma_gI_g) 
+\end{displaymath}
+Where $G$ is the possible number of latent social clusters. Since we can take $G = 1$, the latent variable model provides a flexible and well 
+studied approach to estimating the probability of edges between nodes in a variety of experimental settings. We test both possible approaches to estimating 
+edge probabilities in the following section.
+%more discussion 
+
+%figure Beta(5, 5) vs empirical distribution of latent probabilities. 
+Given the edge probabilities $p_{i,j}$, we can specify the the edge potentials in $H$. In doing so, 
+we make the assumption that a higher edge probability leads to greater social influence, and thus likelihood that two adjacent nodes 
+have the same value, i.e. $P(X_i = X_j)$ is monotonically increacing in $p_{i,j}$. To acheive this, we define the edge potentials as:
+\begin{displaymath}
+  \phi_{i,j}(X_i, X_j) = 1 - p_{i,j}\mathbf{1}\{{X_i \neq X_j}\} \\[0.5ex]
+\end{displaymath}
+We found that this specification resulted in a plausible empirical results across a number of different social networks, but this is another place where a researcher may choose to 
+incorporate prior beliefs in specifying how social influence propogates in a specific network.
+
+%discuss
+
+\subsection{Estimating Causal Effects}
+
+With a distribution over the exposure probabilities for each node, we can turn to the problem of estimating the causal effects of interest. 
+First, we are interested in estimating the average treatment effect, ATE. A naïve estimate of ATE in our setting would be a simple difference of means 
+between the treatment and control groups. However, as discussed, in the presence of spillover effects, this estimate is that of both ATE, and whatever spillover 
+effects may be present in the experiment. Instead, we propose the OLS regression: 
+\begin{displaymath}
+  y_i = \alpha + \rho Z_i + \gamma (1 - Z_i) \pi_i + \varepsilon_i \\[1.0ex]
+\end{displaymath}
+Where $\rho$ is the parameter of interest, and $\varepsilon$ \dots . Since $\pi_i = 1$ if $Z_i = 1$, we add the interaction term $(1 - Z_i)$, so that the causal effect of
+treatment assigment is only contained in $\rho$. Unfortunatley, the coefficient $\gamma$ does not have much causal interpretation, since $\pi_i$ is merely the probability that unit $i$
+is socially exposed to the treatment. What we really desire, in theory, is to be able to classify each non-treated unit into either the socially exposed ($C_i = 1$), or control group $(C_i = 0)$, as doing so 
+would allow for perfect identification of average spillover effects. 
+
+% Discuss GMM procedure
 
 \section{Simulations}
+
+In order to test the performance of our proposed methods, we simulate random experiments on two real world social networks. The first is a group of 55 eigth-graders, with edges between 
+students who were surveyed on which other students they would like to sit next to in class. The second data set is a social network between 61 employees of the Aarhus Computer Science Department, where 
+edges represent colleagues who ate lunch together in a given week. 
 
 \section{Discussion}
 
@@ -212,41 +265,6 @@ produces
 \begin{quote}
   Hasselmo, et al.\ (1995) investigated\dots
 \end{quote}
-
-
-If you wish to load the \verb+natbib+ package with options, you may add the
-following before loading the \verb+neurips_2023+ package:
-\begin{verbatim}
-   \PassOptionsToPackage{options}{natbib}
-\end{verbatim}
-
-
-If \verb+natbib+ clashes with another package you load, you can add the optional
-argument \verb+nonatbib+ when loading the style file:
-\begin{verbatim}
-   \usepackage[nonatbib]{neurips_2023}
-\end{verbatim}
-
-
-As submission is double blind, refer to your own published work in the third
-person. That is, use ``In the previous work of Jones et al.\ [4],'' not ``In our
-previous work [4].'' If you cite your other papers that are not widely available
-(e.g., a journal paper under review), use anonymous author names in the
-citation, e.g., an author of the form ``A.\ Anonymous'' and include a copy of the anonymized paper in the supplementary material.
-
-
-\subsection{Footnotes}
-
-
-Footnotes should be used sparingly.  If you do require a footnote, indicate
-footnotes with a number\footnote{Sample of the first footnote.} in the
-text. Place the footnotes at the bottom of the page on which they appear.
-Precede the footnote with a horizontal rule of 2~inches (12~picas).
-
-
-Note that footnotes are properly typeset \emph{after} punctuation
-marks.\footnote{As in this example.}
-
 
 \subsection{Figures}
 
@@ -411,33 +429,26 @@ Authors may wish to optionally include extra information (complete proofs, addit
 
 \section*{References}
 
-
-References follow the acknowledgments in the camera-ready paper. Use unnumbered first-level heading for
-the references. Any choice of citation style is acceptable as long as you are
-consistent. It is permissible to reduce the font size to \verb+small+ (9 point)
-when listing the references.
-Note that the Reference section does not count towards the page limit.
-\medskip
-
-
 {
 \small
 
-
-[1] Alexander, J.A.\ \& Mozer, M.C.\ (1995) Template-based algorithms for
-connectionist rule extraction. In G.\ Tesauro, D.S.\ Touretzky and T.K.\ Leen
-(eds.), {\it Advances in Neural Information Processing Systems 7},
-pp.\ 609--616. Cambridge, MA: MIT Press.
+[1] Handcock, M.S., Raftery, A.E. and Tantrum, J.M. (2007), Model-based clustering for social networks. Journal of the Royal Statistical Society: Series A (Statistics in Society), 170: 301-354. https://doi.org/10.1111/j.1467-985X.2007.00471.x
 
 
-[2] Bower, J.M.\ \& Beeman, D.\ (1995) {\it The Book of GENESIS: Exploring
-  Realistic Neural Models with the GEneral NEural SImulation System.}  New York:
-TELOS/Springer--Verlag.
+% [1] Alexander, J.A.\ \& Mozer, M.C.\ (1995) Template-based algorithms for
+% connectionist rule extraction. In G.\ Tesauro, D.S.\ Touretzky and T.K.\ Leen
+% (eds.), {\it Advances in Neural Information Processing Systems 7},
+% pp.\ 609--616. Cambridge, MA: MIT Press.
 
 
-[3] Hasselmo, M.E., Schnell, E.\ \& Barkai, E.\ (1995) Dynamics of learning and
-recall at excitatory recurrent synapses and cholinergic modulation in rat
-hippocampal region CA3. {\it Journal of Neuroscience} {\bf 15}(7):5249-5262.
+% [2] Bower, J.M.\ \& Beeman, D.\ (1995) {\it The Book of GENESIS: Exploring
+%   Realistic Neural Models with the GEneral NEural SImulation System.}  New York:
+% TELOS/Springer--Verlag.
+
+
+% [3] Hasselmo, M.E., Schnell, E.\ \& Barkai, E.\ (1995) Dynamics of learning and
+% recall at excitatory recurrent synapses and cholinergic modulation in rat
+% hippocampal region CA3. {\it Journal of Neuroscience} {\bf 15}(7):5249-5262.
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
