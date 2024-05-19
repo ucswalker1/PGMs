@@ -29,7 +29,7 @@
 \usepackage{nicefrac}       % compact symbols for 1/2, etc.
 \usepackage{microtype}      % microtypography
 \usepackage{xcolor}         % colors
-
+\usepackage{multirow}
 
 \title{Estimation of Causal Effects Under Interference}
 
@@ -135,9 +135,9 @@ we propose two possible approaches for specifying the edge potentials. Both invo
 edge probabilities, and can make use of this prior belief. For instance, let $p_{i,j}$ be the probability of an edge between node 
 $i$ and node $j$. A reasonable prior could be $p_{i,j} \sim $ Beta$(5, 5)$. This belief could be incorporated by initializing the 
 edge potentials according to this distribution. The next is a latent variable model introduced by Handcock et al. \label{1}[1]. Where we model $p_{i,j}$ using a logistic regression where the probability of an edge depends on euclidean distance in latent space: 
-\begin{displaymath}
+\begin{equation}
   \mbox{log-odds}(p_{i,j}) = \beta X_{i,j} - ||z_i - z_j||^2
-\end{displaymath}
+\end{equation}
 Where $z_i$ and $z_j$ are node $i$ and node $j$'s respective positions in latent space, and $X_{i,j}$ is some vector valued edge covariates. Here, it is assumed that the existence of an edge is independent of other edges. 
 Handcock jointly estimates the parameter $\beta$ and the latent $z_i$'s using MCMC, with prior: \begin{displaymath}
   z_i \sim \sum_{g = 1}^{G}\lambda_g \mbox{MVN}_d(\mu_g, \sigma_gI_g) 
@@ -157,29 +157,56 @@ have the same value, i.e. $P(X_i = X_j)$ is monotonically increacing in $p_{i,j}
 We found that this specification resulted in a plausible empirical results across a number of different social networks, but this is another place where a researcher may choose to 
 incorporate prior beliefs in specifying how social influence propogates in a specific network.
 
-%discuss
-
 \subsection{Estimating Causal Effects}
 
 With a distribution over the exposure probabilities for each node, we can turn to the problem of estimating the causal effects of interest. 
 First, we are interested in estimating the average treatment effect, ATE. A naïve estimate of ATE in our setting would be a simple difference of means 
 between the treatment and control groups. However, as discussed, in the presence of spillover effects, this estimate is that of both ATE, and whatever spillover 
 effects may be present in the experiment. Instead, we propose the OLS regression: 
-\begin{displaymath}
+\begin{equation}
   y_i = \alpha + \rho Z_i + \gamma (1 - Z_i) \pi_i + \varepsilon_i \\[1.0ex]
-\end{displaymath}
+\end{equation}
 Where $\rho$ is the parameter of interest, and $\varepsilon$ \dots . Since $\pi_i = 1$ if $Z_i = 1$, we add the interaction term $(1 - Z_i)$, so that the causal effect of
 treatment assigment is only contained in $\rho$. Unfortunatley, the coefficient $\gamma$ does not have much causal interpretation, since $\pi_i$ is merely the probability that unit $i$
 is socially exposed to the treatment. What we really desire, in theory, is to be able to classify each non-treated unit into either the socially exposed ($C_i = 1$), or control group $(C_i = 0)$, as doing so 
 would allow for perfect identification of average spillover effects. 
 
-% Discuss GMM procedure
+\textit{discuss GMM model}
 
 \section{Simulations}
 
 In order to test the performance of our proposed methods, we simulate random experiments on two real world social networks. The first is a group of 55 eigth-graders, with edges between 
 students who were surveyed on which other students they would like to sit next to in class. The second data set is a social network between 61 employees of the Aarhus Computer Science Department, where 
-edges represent colleagues who ate lunch together in a given week. 
+edges represent colleagues who ate lunch together in a given week. We simlulate the outcome of interest drawing from a normal distribution $y_{i} \sim \mathcal{N}(\mu, \sigma^2)$, and then consider a dilated effects scenario, 
+where spillover is half of the average treatment effect. For each graph, we consider three possible data generating processes for the spillover effects. In the first, all neighbors of treated units are socially influenced. 
+In the second, social influence is propogated across each edge $(i, j)$ with probability $p_{i,j}$ according to the latent variable model (1), i.e. socially influenced neighbors of treated units can influence their neighbors etc. until all possible influence
+has propogated across the network. The third is the same as the second process except $p_{i,j} = 0.5$ for all edges in the network. We also test two different spesifications for the edge potentials in each scenario. In the first, the edge potentials accord with the latent variable model (1), and in the second we assume that $p_{i,j} \sim$ Beta$(5, 5)$. The following table report the point estimates of the OLS regression (2) and corresponding standard errors following 1,000 simulated 
+treatment assigments on each of the possible combinations of data generating processes, edge potentials, and social networks.  
+
+\begin{table}[h]
+  \caption{Simulation Results}
+  \label{sample-table}
+  \centering
+  \begin{tabular}{ccccccccc}
+    \toprule
+    & & \multicolumn{3}{c}{Eighth Graders} & & & \multicolumn{2}{c}{Aarhaus}              \\
+    \cmidrule{3-5} \cmidrule{7-9}
+    DGP & $\phi_{i,j}$ & $\bar{y}^1 - \bar{y}^0$ & $\rho$ & $\gamma$ & & $\bar{y}^1 - \bar{y}^0$ & $\rho$ & $\gamma$\\
+    \midrule
+    \multirow{ 2}{*}{Neighbors} & Latent & 12 & 123 & & 12 & 1209     \\
+    \cmidrule{2-9}
+    & Beta \\
+    \midrule
+    \multirow{ 2}{*}{Latent}& Latent      & \\
+    \cmidrule{2-7}
+    & Beta  \\
+    \midrule
+    \multirow{ 2}{*}{$p_{i,j} = 0.5$}& Latent      & \\
+    \cmidrule{2-7}
+    & Beta  \\
+    \bottomrule
+  \end{tabular}
+\end{table}
 
 \section{Discussion}
 
