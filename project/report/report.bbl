@@ -1,0 +1,43 @@
+\begin{thebibliography}{5}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Rubin(1990)]{Rubin}
+Donald~B. Rubin.
+\newblock Formal mode of statistical inference for causal effects.
+\newblock \emph{Journal of Statistical Planning and Inference}, 25\penalty0 (3):\penalty0 279--292, 1990.
+\newblock ISSN 0378-3758.
+\newblock \doi{https://doi.org/10.1016/0378-3758(90)90077-8}.
+\newblock URL \url{https://www.sciencedirect.com/science/article/pii/0378375890900778}.
+
+\bibitem[Robert M.~Bond(2012)]{Bond}
+Jason J.~Jones Robert M.~Bond, Christopher J.~Fariss.
+\newblock A 61-million-person experiment in social influence and political mobilization.
+\newblock \emph{Nature}, \penalty0 (489):\penalty0 295--298, 2012.
+\newblock \doi{https://doi.org/10.1038/nature11421}.
+\newblock URL \url{https://www.nature.com/articles/nature11421}.
+
+\bibitem[Toulis and Kao(2013)]{pmlr-v28-toulis13}
+Panos Toulis and Edward Kao.
+\newblock Estimation of causal peer influence effects.
+\newblock In Sanjoy Dasgupta and David McAllester, editors, \emph{Proceedings of the 30th International Conference on Machine Learning}, volume~28 of \emph{Proceedings of Machine Learning Research}, pages 1489--1497, Atlanta, Georgia, USA, 17--19 Jun 2013. PMLR.
+\newblock URL \url{https://proceedings.mlr.press/v28/toulis13.html}.
+
+\bibitem[Aronow and Samii(2017)]{Aronow}
+Peter~M. Aronow and Cyrus Samii.
+\newblock {Estimating average causal effects under general interference, with application to a social network experiment}.
+\newblock \emph{The Annals of Applied Statistics}, 11\penalty0 (4):\penalty0 1912 -- 1947, 2017.
+\newblock \doi{10.1214/16-AOAS1005}.
+\newblock URL \url{https://doi.org/10.1214/16-AOAS1005}.
+
+\bibitem[Handcock et~al.(2007)Handcock, Raftery, and Tantrum]{Handcock}
+Mark~S. Handcock, Adrian~E. Raftery, and Jeremy~M. Tantrum.
+\newblock Model-based clustering for social networks.
+\newblock \emph{Journal of the Royal Statistical Society: Series A (Statistics in Society)}, 170\penalty0 (2):\penalty0 301--354, 2007.
+\newblock \doi{https://doi.org/10.1111/j.1467-985X.2007.00471.x}.
+\newblock URL \url{https://rss.onlinelibrary.wiley.com/doi/abs/10.1111/j.1467-985X.2007.00471.x}.
+
+\end{thebibliography}

@@ -31,7 +31,9 @@
 \usepackage{xcolor}         % colors
 \usepackage{multirow}
 
-\title{Estimation of Causal Effects Under Interference}
+\bibliographystyle{unsrtnat}
+
+\title{Causal Effects Under Interference}
 
 
 % The \author macro works with any number of authors. There are two commands
@@ -92,16 +94,28 @@
 
 \section{Introduction}
 
+Reliable causal inference is central to a variety of diciplines in the natural and social sciences. While the Randomized Control Trial (RCT) has long been the gold standard in terms of 
+causal inference, central to it is an assumption in the economic literature first coined by \cite{Rubin} known as SUTVA, or the stable unit treatment value assumption, which states that there is no
+interference between units, and no hidden variations of treatment. Essentially, the outcome of each individual does not depend on the treatment assigment of others. When this assumption is violated, 
+there are said to be spillover effects. And it often is. In an RCT on 61 million Facebook Users in the buildup to the 2020 United States Congressional elections, the treatment—sending a message that encouraged users to vote—was 
+observed to ``spillover'' to the treated individual's closest Facebook friends \cite{Bond}. 
+
+A number of recent works have sought to address estimation of both treatment and spillover effects in the presence of SUTVA violations, particularly in the context of an observed social network between individuals. \cite{pmlr-v28-toulis13} seek to estimate spillover effects directly, developing both 
+an experimental design using sequential randomization, and a Bayesian procedure that assumes a linear response. Other approaches consist of the researcher specifying an ``exposure mapping'' to categorize individuals, e.g. treated, neighbor of treated, etc. and then use 
+inverse probability weighting based on the probability of assignment for each individual \cite{Aronow}. Due to the inherent graphical nature of the problem, this paper seeks to examine how a probabilistic graphical model may be well 
+suited to capture interference and spillover effects in a social network. We develop a flexible framework that defines a probabilistic graphical model over the social network, and uses this model to estimate unit level exposure to treated units, 
+allowing us to compute causal effects of interest. 
+
 \section{Setting and Assumptions}
 
 We consider the setting of a randomized experiment on a social network of $N$ nodes. The network, $G = (V, E)$, is observed, and may or may not contain node-level covariates or edge strengths. 
 Let $\mathbf{Z} = (Z_1, Z_2, \dots ,Z_N)$ be a treatment assigment vector over $N$ units, where $Z_i \in \{0, 1\}$ specifies which of the possible treatments unit $i$ receives. 
 We assume that $P(Z_i = 1)$ is the same for all $i \in \{N\}$, so treatment assigment is unconfounded. We define $\mathbf{C} = (C_1, C_2, \dots, C_N)$ to be a latent exposure vector, where $C_i \in \{0, 1\}$ specifies if unit $i$ is exposed to the treatment via social interaction. 
 Here, we assume that all treated units are exposed, such that $Z_i \times C_i = 1$, but that treatment units do not experience further spillover effects. %TODO: go more indepth on this 
-If we could observe $\mathbf{C}$, then our work would be done, since we could partition the units into treatment, exposured, and control groups, and employ classic techniques to infer their differences in outcome. 
+If we could observe $\mathbf{C}$, then our work would be done, since we could partition the units into treatment, exposure, and control groups, and employ classic techniques to infer their differences in outcome. 
 
-Instead, we define $\pi_i(\mathbf{Z}) = P(C_i = 1)$ to be the expsoure probability for unit $i$ given some instantiation of the experiment $\mathbf{Z}, \mathbf{C}$. Since an individual's social exposure to the treatment depends on the random assigment in $G$, so does $\pi_i(\mathbf{Z})$. For simplicity, we assume that
-the effects of both treatment assigment and social exposure are homogenous. Furthermore, we assume that social interaction, and thus social exposure to the treatment, only occurs through the edges $E$ of $G$. However, we make no assumption on the form of such exposures \dots
+Instead, we define $\pi_i = P(C_i = 1)$ to be the expsoure probability for unit $i$ given some instantiation of the experiment $\mathbf{Z}, \mathbf{C}$. Since an individual's social exposure to the treatment depends on the random assigment in $G$, so does $\pi_i$. For simplicity, we assume that
+the effect of treatment assigment is homogeneous. Furthermore, we assume that social interaction, and thus social exposure to the treatment, only occurs through the edges $E$ of $G$. However, we do not assume that spillover effects are homogeneous, and examine both this and the heterogeneous case in later sections.
 
 \section{Estimating Exposures and Causal Effects}
 
@@ -121,6 +135,8 @@ This reformulation allows us to use a host of existing inference algorithms to l
 % In the case of larger social networks where exact inference may be intractable, approximation 
 % algorithms can be used, although this paper does not  
 
+% discuss posterior marginals --> exposure probabilities 
+
 \subsection{Unary and Edge Potentials}
 
 Having refomulated estimating $\pi_i(\mathbf{Z})$ as inference of marginals in a Pairwise MRF, 
@@ -134,7 +150,7 @@ The edge potentials $\phi_i(X_i, X_j)$ have an even more intuitive interpretatio
 we propose two possible approaches for specifying the edge potentials. Both involve first specifying the probability of each edge in the social network. The first is that, given domain knowledge within the experiment, the researcher may have a prior on the distribution of 
 edge probabilities, and can make use of this prior belief. For instance, let $p_{i,j}$ be the probability of an edge between node 
 $i$ and node $j$. A reasonable prior could be $p_{i,j} \sim $ Beta$(5, 5)$. This belief could be incorporated by initializing the 
-edge potentials according to this distribution. The next is a latent variable model introduced by Handcock et al. \label{1}[1]. Where we model $p_{i,j}$ using a logistic regression where the probability of an edge depends on euclidean distance in latent space: 
+edge potentials according to this distribution. The next is a latent variable model introduced by \cite{Handcock}. Where we model $p_{i,j}$ using a logistic regression where the probability of an edge depends on euclidean distance in latent space: 
 \begin{equation}
   \mbox{log-odds}(p_{i,j}) = \beta X_{i,j} - ||z_i - z_j||^2
 \end{equation}
@@ -166,12 +182,15 @@ effects may be present in the experiment. Instead, we propose the OLS regression
 \begin{equation}
   y_i = \alpha + \rho Z_i + \gamma (1 - Z_i) \pi_i + \varepsilon_i \\[1.0ex]
 \end{equation}
-Where $\rho$ is the parameter of interest, and $\varepsilon$ \dots . Since $\pi_i = 1$ if $Z_i = 1$, we add the interaction term $(1 - Z_i)$, so that the causal effect of
+Where $\rho$ is the parameter of interest. Since $\pi_i = 1$ if $Z_i = 1$, we add the interaction term $(1 - Z_i)$, so that the causal effect of
 treatment assigment is only contained in $\rho$. Unfortunatley, the coefficient $\gamma$ does not have much causal interpretation, since $\pi_i$ is merely the probability that unit $i$
-is socially exposed to the treatment. What we really desire, in theory, is to be able to classify each non-treated unit into either the socially exposed ($C_i = 1$), or control group $(C_i = 0)$, as doing so 
-would allow for perfect identification of average spillover effects. 
+is socially exposed to the treatment. In theory, the above regression model, and our approach in general, is better suited to the heterogeneous spillover effects case, since potential outcomes are linear in $\pi_i$. 
+In this case, we could interperent $\gamma \times \pi_i$ to be the partial effect of exposure for unit $i$. 
 
-\textit{discuss GMM model}
+In the case of homogeneous spillover effects, what we really desire is to be able to classify each non-treated unit into either the socially exposed ($C_i = 1$), or control group $(C_i = 0)$, as doing so 
+would allow for perfect identification of average spillover effects. There are a number of possible approaches. One might be assigning units with exposure probability sufficiently close to zero to the control group, 
+and having a similar condition for assigment to the expsoure group. Another may be to explicitly learn a classifier. If treatment assigment were confounded by latent or observed covariates, this may be possible without 
+taking the outcome of interest into account, since the treatment and exposure groups would have greater similarity than the controls. However, the setting of this paper assumes that treatment assigment is unconfounded, 
 
 \section{Simulations}
 
@@ -181,302 +200,63 @@ edges represent colleagues who ate lunch together in a given week. We simlulate 
 where spillover is half of the average treatment effect. For each graph, we consider three possible data generating processes for the spillover effects. In the first, all neighbors of treated units are socially influenced. 
 In the second, social influence is propogated across each edge $(i, j)$ with probability $p_{i,j}$ according to the latent variable model (1), i.e. socially influenced neighbors of treated units can influence their neighbors etc. until all possible influence
 has propogated across the network. The third is the same as the second process except $p_{i,j} = 0.5$ for all edges in the network. We also test two different spesifications for the edge potentials in each scenario. In the first, the edge potentials accord with the latent variable model (1), and in the second we assume that $p_{i,j} \sim$ Beta$(5, 5)$. The following table report the point estimates of the OLS regression (2) and corresponding standard errors following 1,000 simulated 
-treatment assigments on each of the possible combinations of data generating processes, edge potentials, and social networks.  
+treatment assigments on each of the possible combinations of data generating processes, edge potentials, and social networks. In the setting of this paper, since treatment assigment is unconfounded 
 
-\begin{table}[h]
-  \caption{Simulation Results}
+\begin{table}[htbp]
+  \caption{Simulation Results (True parameter: $\rho = 3$)}
   \label{sample-table}
   \centering
-  \begin{tabular}{ccccccccc}
+  \begin{tabular}{ccccccc}
     \toprule
-    & & \multicolumn{3}{c}{Eighth Graders} & & & \multicolumn{2}{c}{Aarhaus}              \\
-    \cmidrule{3-5} \cmidrule{7-9}
-    DGP & $\phi_{i,j}$ & $\bar{y}^1 - \bar{y}^0$ & $\rho$ & $\gamma$ & & $\bar{y}^1 - \bar{y}^0$ & $\rho$ & $\gamma$\\
+    & & \multicolumn{2}{c}{Eighth Graders} & & \multicolumn{2}{c}{Aarhaus CS}              \\
+    \cmidrule{3-4} \cmidrule{6-7}
+    DGP & $\phi_{i,j}$ & $\bar{y}^1 - \bar{y}^0$ & $\rho$ & & $\bar{y}^1 - \bar{y}^0$ & $\rho$ \\
     \midrule
-    \multirow{ 2}{*}{Neighbors} & Latent & 12 & 123 & & 12 & 1209     \\
-    \cmidrule{2-9}
-    & Beta \\
-    \midrule
-    \multirow{ 2}{*}{Latent}& Latent      & \\
+    \multirow{ 2}{*}{Neighbors} & Latent & 2.67 & 3.03 (0.30) & & 2.31 & 3.03 (0.43)    \\
     \cmidrule{2-7}
-    & Beta  \\
+    & Beta & 2.66 & 3.14 (0.38) & & 2.32 & 3.63 (0.63)  \\
     \midrule
-    \multirow{ 2}{*}{$p_{i,j} = 0.5$}& Latent      & \\
+    \multirow{ 2}{*}{Latent}& Latent & 2.73 & 2.93 (0.33)  & & 2.55 & 2.93 (0.43)  \\
     \cmidrule{2-7}
-    & Beta  \\
+    & Beta  & 2.72 & 2.95 (0.35)  & & 2.54 & 3.08 (0.61) \\
+    \midrule
+    \multirow{ 2}{*}{$p_{i,j} = 0.5$}& Latent & 2.55 & 2.67 (0.38)  & & 2.31 & 2.48 (0.46) \\
+    \cmidrule{2-7} 
+    & Beta  & 2.56 & 2.81 (0.40)  & & 2.32 & 2.64 (0.67)  \\
     \bottomrule
   \end{tabular}
 \end{table}
+The estimates for $\rho$
 
 \section{Discussion}
 
-The text must be confined within a rectangle 5.5~inches (33~picas) wide and
-9~inches (54~picas) long. The left margin is 1.5~inch (9~picas).  Use 10~point
-type with a vertical spacing (leading) of 11~points.  Times New Roman is the
-preferred typeface throughout, and will be selected for you by default.
-Paragraphs are separated by \nicefrac{1}{2}~line space (5.5 points), with no
-indentation.
 
+\bibliography{rep}
 
-The paper title should be 17~point, initial caps/lower case, bold, centered
-between two horizontal rules. The top rule should be 4~points thick and the
-bottom rule should be 1~point thick. Allow \nicefrac{1}{4}~inch space above and
-below the title to rules. All pages should start at 1~inch (6~picas) from the
-top of the page.
 
+% {
+% \small
 
-For the final version, authors' names are set in boldface, and each name is
-centered above the corresponding address. The lead author's name is to be listed
-first (left-most), and the co-authors' names (if different address) are set to
-follow. If there is only one co-author, list both author and co-author side by
-side.
 
 
-Please pay special attention to the instructions in Section \ref{others}
-regarding figures, tables, acknowledgments, and references.
+% [1] Handcock, M.S., Raftery, A.E. and Tantrum, J.M. (2007), Model-based clustering for social networks. Journal of the Royal Statistical Society: Series A (Statistics in Society), 170: 301-354. https://doi.org/10.1111/j.1467-985X.2007.00471.x
 
-\label{headings}
 
+% % [1] Alexander, J.A.\ \& Mozer, M.C.\ (1995) Template-based algorithms for
+% % connectionist rule extraction. In G.\ Tesauro, D.S.\ Touretzky and T.K.\ Leen
+% % (eds.), {\it Advances in Neural Information Processing Systems 7},
+% % pp.\ 609--616. Cambridge, MA: MIT Press.
 
-All headings should be lower case (except for first word and proper nouns),
-flush left, and bold.
 
+% % [2] Bower, J.M.\ \& Beeman, D.\ (1995) {\it The Book of GENESIS: Exploring
+% %   Realistic Neural Models with the GEneral NEural SImulation System.}  New York:
+% % TELOS/Springer--Verlag.
 
-First-level headings should be in 12-point type.
 
-
-\subsection{Headings: second level}
-
-
-Second-level headings should be in 10-point type.
-
-
-\subsubsection{Headings: third level}
-
-
-Third-level headings should be in 10-point type.
-
-
-\paragraph{Paragraphs}
-
-
-There is also a \verb+\paragraph+ command available, which sets the heading in
-bold, flush left, and inline with the text, with the heading followed by 1\,em
-of space.
-
-\label{others}
-
-
-These instructions apply to everyone.
-
-
-\subsection{Citations within the text}
-
-
-The \verb+natbib+ package will be loaded for you by default.  Citations may be
-author/year or numeric, as long as you maintain internal consistency.  As to the
-format of the references themselves, any style is acceptable as long as it is
-used consistently.
-
-
-The documentation for \verb+natbib+ may be found at
-\begin{center}
-  \url{http://mirrors.ctan.org/macros/latex/contrib/natbib/natnotes.pdf}
-\end{center}
-Of note is the command \verb+\citet+, which produces citations appropriate for
-use in inline text.  For example,
-\begin{verbatim}
-   \citet{hasselmo} investigated\dots
-\end{verbatim}
-produces
-\begin{quote}
-  Hasselmo, et al.\ (1995) investigated\dots
-\end{quote}
-
-\subsection{Figures}
-
-
-\begin{figure}
-  \centering
-  \fbox{\rule[-.5cm]{0cm}{4cm} \rule[-.5cm]{4cm}{0cm}}
-  \caption{Sample figure caption.}
-\end{figure}
-
-
-All artwork must be neat, clean, and legible. Lines should be dark enough for
-purposes of reproduction. The figure number and caption always appear after the
-figure. Place one line space before the figure caption and one line space after
-the figure. The figure caption should be lower case (except for first word and
-proper nouns); figures are numbered consecutively.
-
-
-You may use color figures.  However, it is best for the figure captions and the
-paper body to be legible if the paper is printed in either black/white or in
-color.
-
-
-\subsection{Tables}
-
-
-All tables must be centered, neat, clean and legible.  The table number and
-title always appear before the table.  See Table~\ref{sample-table}.
-
-
-Place one line space before the table title, one line space after the
-table title, and one line space after the table. The table title must
-be lower case (except for first word and proper nouns); tables are
-numbered consecutively.
-
-
-Note that publication-quality tables \emph{do not contain vertical rules.} We
-strongly suggest the use of the \verb+booktabs+ package, which allows for
-typesetting high-quality, professional tables:
-\begin{center}
-  \url{https://www.ctan.org/pkg/booktabs}
-\end{center}
-This package was used to typeset Table~\ref{sample-table}.
-
-
-\begin{table}
-  \caption{Sample table title}
-  \label{sample-table}
-  \centering
-  \begin{tabular}{lll}
-    \toprule
-    \multicolumn{2}{c}{Part}                   \\
-    \cmidrule(r){1-2}
-    Name     & Description     & Size ($\mu$m) \\
-    \midrule
-    Dendrite & Input terminal  & $\sim$100     \\
-    Axon     & Output terminal & $\sim$10      \\
-    Soma     & Cell body       & up to $10^6$  \\
-    \bottomrule
-  \end{tabular}
-\end{table}
-
-\subsection{Math}
-Note that display math in bare TeX commands will not create correct line numbers for submission. Please use LaTeX (or AMSTeX) commands for unnumbered display math. (You really shouldn't be using \$\$ anyway; see \url{https://tex.stackexchange.com/questions/503/why-is-preferable-to} and \url{https://tex.stackexchange.com/questions/40492/what-are-the-differences-between-align-equation-and-displaymath} for more information.)
-
-\subsection{Final instructions}
-
-Do not change any aspects of the formatting parameters in the style files.  In
-particular, do not modify the width or length of the rectangle the text should
-fit into, and do not change font sizes (except perhaps in the
-\textbf{References} section; see below). Please note that pages should be
-numbered.
-
-
-\section{Preparing PDF files}
-
-
-Please prepare submission files with paper size ``US Letter,'' and not, for
-example, ``A4.''
-
-
-Fonts were the main cause of problems in the past years. Your PDF file must only
-contain Type 1 or Embedded TrueType fonts. Here are a few instructions to
-achieve this.
-
-
-\begin{itemize}
-
-
-\item You should directly generate PDF files using \verb+pdflatex+.
-
-
-\item You can check which fonts a PDF files uses.  In Acrobat Reader, select the
-  menu Files$>$Document Properties$>$Fonts and select Show All Fonts. You can
-  also use the program \verb+pdffonts+ which comes with \verb+xpdf+ and is
-  available out-of-the-box on most Linux machines.
-
-
-\item \verb+xfig+ "patterned" shapes are implemented with bitmap fonts.  Use
-  "solid" shapes instead.
-
-
-\item The \verb+\bbold+ package almost always uses bitmap fonts.  You should use
-  the equivalent AMS Fonts:
-\begin{verbatim}
-   \usepackage{amsfonts}
-\end{verbatim}
-followed by, e.g., \verb+\mathbb{R}+, \verb+\mathbb{N}+, or \verb+\mathbb{C}+
-for $\mathbb{R}$, $\mathbb{N}$ or $\mathbb{C}$.  You can also use the following
-workaround for reals, natural and complex:
-\begin{verbatim}
-   \newcommand{\RR}{I\!\!R} %real numbers
-   \newcommand{\Nat}{I\!\!N} %natural numbers
-   \newcommand{\CC}{I\!\!\!\!C} %complex numbers
-\end{verbatim}
-Note that \verb+amsfonts+ is automatically loaded by the \verb+amssymb+ package.
-
-
-\end{itemize}
-
-
-If your file contains type 3 fonts or non embedded TrueType fonts, we will ask
-you to fix it.
-
-
-\subsection{Margins in \LaTeX{}}
-
-
-Most of the margin problems come from figures positioned by hand using
-\verb+\special+ or other commands. We suggest using the command
-\verb+\includegraphics+ from the \verb+graphicx+ package. Always specify the
-figure width as a multiple of the line width as in the example below:
-\begin{verbatim}
-   \usepackage[pdftex]{graphicx} ...
-   \includegraphics[width=0.8\linewidth]{myfile.pdf}
-\end{verbatim}
-See Section 4.4 in the graphics bundle documentation
-(\url{http://mirrors.ctan.org/macros/latex/required/graphics/grfguide.pdf})
-
-
-A number of width problems arise when \LaTeX{} cannot properly hyphenate a
-line. Please give LaTeX hyphenation hints using the \verb+\-+ command when
-necessary.
-
-
-\begin{ack}
-Use unnumbered first level headings for the acknowledgments. All acknowledgments
-go at the end of the paper before the list of references. Moreover, you are required to declare
-funding (financial activities supporting the submitted work) and competing interests (related financial activities outside the submitted work).
-More information about this disclosure can be found at: \url{https://neurips.cc/Conferences/2023/PaperInformation/FundingDisclosure}.
-
-
-Do {\bf not} include this section in the anonymized submission, only in the final paper. You can use the \texttt{ack} environment provided in the style file to autmoatically hide this section in the anonymized submission.
-\end{ack}
-
-
-
-\section{Supplementary Material}
-
-Authors may wish to optionally include extra information (complete proofs, additional experiments and plots) in the appendix. All such materials should be part of the supplemental material (submitted separately) and should NOT be included in the main submission.
-
-
-\section*{References}
-
-{
-\small
-
-[1] Handcock, M.S., Raftery, A.E. and Tantrum, J.M. (2007), Model-based clustering for social networks. Journal of the Royal Statistical Society: Series A (Statistics in Society), 170: 301-354. https://doi.org/10.1111/j.1467-985X.2007.00471.x
-
-
-% [1] Alexander, J.A.\ \& Mozer, M.C.\ (1995) Template-based algorithms for
-% connectionist rule extraction. In G.\ Tesauro, D.S.\ Touretzky and T.K.\ Leen
-% (eds.), {\it Advances in Neural Information Processing Systems 7},
-% pp.\ 609--616. Cambridge, MA: MIT Press.
-
-
-% [2] Bower, J.M.\ \& Beeman, D.\ (1995) {\it The Book of GENESIS: Exploring
-%   Realistic Neural Models with the GEneral NEural SImulation System.}  New York:
-% TELOS/Springer--Verlag.
-
-
-% [3] Hasselmo, M.E., Schnell, E.\ \& Barkai, E.\ (1995) Dynamics of learning and
-% recall at excitatory recurrent synapses and cholinergic modulation in rat
-% hippocampal region CA3. {\it Journal of Neuroscience} {\bf 15}(7):5249-5262.
-}
+% % [3] Hasselmo, M.E., Schnell, E.\ \& Barkai, E.\ (1995) Dynamics of learning and
+% % recall at excitatory recurrent synapses and cholinergic modulation in rat
+% % hippocampal region CA3. {\it Journal of Neuroscience} {\bf 15}(7):5249-5262.
+% }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
