@@ -27,11 +27,14 @@
 \graphicspath{{Images/}{./}} % Specifies where to look for included images (trailing slash required)
 
 \usepackage{booktabs} % Allows the use of \toprule, \midrule and \bottomrule for better rules in tables
-
+\usepackage{tikz}
+\usepackage{bbm}
+\usepackage{multirow}
 %----------------------------------------------------------------------------------------
 %	SELECT LAYOUT THEME
 %----------------------------------------------------------------------------------------
 
+\usefonttheme[onlymath]{serif}
 % Beamer comes with a number of default layout themes which change the colors and layouts of slides. Below is a list of all themes available, uncomment each in turn to see what they look like.
 
 %\usetheme{default}
@@ -142,9 +145,9 @@
 %	PRESENTATION INFORMATION
 %----------------------------------------------------------------------------------------
 
-\title[Short Title]{Full Presentation Title} % The short title in the optional parameter appears at the bottom of every slide, the full title in the main parameter is only on the title page
+\title[Causal Effects]{Causal Effects Under Interference} % The short title in the optional parameter appears at the bottom of every slide, the full title in the main parameter is only on the title page
 
-\subtitle{Optional Subtitle} % Presentation subtitle, remove this command if a subtitle isn't required
+\subtitle{A Markov Random Field Approach} % Presentation subtitle, remove this command if a subtitle isn't required
 
 \author[Calvin Walker]{Calvin Walker} % Presenter name(s), the optional parameter can contain a shortened version to appear on the bottom of every slide, while the main parameter will appear on the title slide
 
@@ -200,7 +203,7 @@
 			\begin{align*}
 				ATE = \bar{y}^1 - \bar{y}^0
 			\end{align*}
-			\item Use various parametric/non-parametric approaches to adjust for confounding by covariates
+			\item Various parametric/non-parametric methods to adjust for confounding
 		\end{itemize}
 	\end{itemize}
 	\onslide<3-> \begin{itemize}
@@ -224,270 +227,176 @@
 \end{frame}
 
 \begin{frame}
-	\frametitle{Paragraphs of Text}
-	
-	Sed iaculis \alert{dapibus gravida}. Morbi sed tortor erat, nec interdum arcu. Sed id lorem lectus. Quisque viverra augue id sem ornare non aliquam nibh tristique. Aenean in ligula nisl. Nulla sed tellus ipsum. Donec vestibulum ligula non lorem vulputate fermentum accumsan neque mollis.
-	
-	\bigskip % Vertical whitespace
-	
-	% Quote example
-	\begin{quote}
-		Sed diam enim, sagittis nec condimentum sit amet, ullamcorper sit amet libero. Aliquam vel dui orci, a porta odio.\\
-		--- Someone, somewhere\ldots
-	\end{quote}
-	
-	\bigskip % Vertical whitespace
-	
-	Nullam id suscipit ipsum. Aenean lobortis commodo sem, ut commodo leo gravida vitae. Pellentesque vehicula ante iaculis arcu pretium rutrum eget sit amet purus. Integer ornare nulla quis neque ultrices lobortis.
-\end{frame}
-
-%------------------------------------------------
-
-\begin{frame}
-	\frametitle{Lists}
-	\framesubtitle{Bullet Points and Numbered Lists} % Optional subtitle
-	
+	\frametitle{Current Methods}
 	\begin{itemize}
-		\item Lorem ipsum dolor sit amet, consectetur adipiscing elit
-		\item Aliquam blandit faucibus nisi, sit amet dapibus enim tempus
-		\begin{itemize}
-			\item Lorem ipsum dolor sit amet, consectetur adipiscing elit
-			\item Nam cursus est eget velit posuere pellentesque
-		\end{itemize}
-		\item Nulla commodo, erat quis gravida posuere, elit lacus lobortis est, quis porttitor odio mauris at libero
+		\setlength\itemsep{1em}
+		\item Clustering: Only need SUTVA to hold between larger groups, eg. schools instead of students 
+		\item Exposure mapping: Researcher specifies some grouping ex. \begin{align*}
+			f(\mathbf{z}, \theta_i) = \begin{cases}
+				d_{11} \ &(\text{Direct + Indirect Exposure}) \\
+				d_{10} \ &(\text{Direct Exposure})\\ 
+				d_{01} \ &(\text{Indirect Exposure})\\
+				d_{00} \ &(\text{No Exposure})
+			\end{cases}
+		\end{align*}
+		then can compare groups to estimate potential spillover 
 	\end{itemize}
-	
-	\bigskip % Vertical whitespace
-	
-	\begin{enumerate}
-		\item Nam cursus est eget velit posuere pellentesque
-		\item Vestibulum faucibus velit a augue condimentum quis convallis nulla gravida 
-	\end{enumerate}
 \end{frame}
 
-%------------------------------------------------
-
-\subsection{Blocks}
-
 \begin{frame}
-	\frametitle{Blocks of Highlighted Text}
-	
-	\begin{block}{Block Title}
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer lectus nisl, ultricies in feugiat rutrum, porttitor sit amet augue.
-	\end{block}
-	
-	\begin{exampleblock}{Example Block Title}
-		Aliquam ut tortor mauris. Sed volutpat ante purus, quis accumsan.
-	\end{exampleblock}
-	
-	\begin{alertblock}{Alert Block Title}
-		Pellentesque sed tellus purus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
-	\end{alertblock}
-	
-	\begin{block}{} % Block without title
-		Suspendisse tincidunt sagittis gravida. Curabitur condimentum, enim sed venenatis rutrum, ipsum neque consectetur orci.
-	\end{block}
+	\frametitle{Setting and Assumptions}
+	\begin{itemize}
+		\setlength\itemsep{1em}
+		\item Random experiment on social network $G = (V, E)$
+		\item Treatment vector $\mathbf{Z} \in \{0, 1\}^{n}$ is known 
+		\item Some unknown exposure vector $\mathbf{C} \in \{0, 1\}^{n}$
+		\item Treatment effects are homogeneous, but spillover/exposure may be either 
+		homogeneous or heterogeneous
+		\item Want to learn the ``exposure probability'' $\pi_i$ for each individual in $G$
+	\end{itemize}
 \end{frame}
 
-%------------------------------------------------
-
-\subsection{Columns}
-
 \begin{frame}
-	\frametitle{Multiple Columns}
-	\framesubtitle{Subtitle} % Optional subtitle
-	
-	\begin{columns}[c] % The "c" option specifies centered vertical alignment while the "t" option is used for top vertical alignment
-		\begin{column}{0.45\textwidth} % Left column width
-			\textbf{Heading}
-			\begin{enumerate}
-				\item Statement
-				\item Explanation
-				\item Example
-			\end{enumerate}
-		\end{column}
-		\begin{column}{0.5\textwidth} % Right column width
-			Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer lectus nisl, ultricies in feugiat rutrum, porttitor sit amet augue. Aliquam ut tortor mauris. Sed volutpat ante purus, quis accumsan dolor.
-		\end{column}
-	\end{columns}
+	\frametitle{Modeling as an MRF}
+	\begin{itemize}
+		\setlength\itemsep{1em}
+		\item Define a Pairwise Markov Random Field $B = (P, H)$ where $H$ has the same structure as $G$
+		\item Each node in the social network becoms a Bernoulli random variable $X_i$ in $H$
+		% \begin{align*}
+		% 	\phi(X_i = 1) = \phi(X_i = 0)
+		% \end{align*}
+		\item Evidence: for any treated unit, we assume they are already exposed, so $X_i = 1$ for all units $Z_i = 1$
+		\item Perform inference on the marginals conditional on the evidence $P(X_i\ |\ e)$
+		\item Compute exposure probabilities: \begin{align*}
+			\pi_i = P(X_i = 1\ |\ e) - P(X_i = 0\ |\ e)
+		\end{align*}
+	\end{itemize}
+% \begin{center}
+% \begin{tikzpicture}[>=stealth,thick,text centered,node distance=1cm]
+%     % Define nodes
+%     \node (A) [circle,draw] {};
+%     \node (B) [circle,draw,right of=A] {};
+%     \node (C) [circle,draw,below of=A] {};
+%     \node (D) [circle,draw,right of=C] {};
+%     % Add edges
+%     \draw[-] (A) -- (B);
+%     \draw[-] (A) -- (C);
+%     \draw[-] (B) -- (D);
+%     \draw[-] (C) -- (D);
+% \end{tikzpicture}
+% \end{center}
+% \begin{itemize}
+% 	\setlength\itemsep{1em}
+% 	\item Set evidence as $X_i = 1$ if $Z_i = 1$
+% 	\item Infer marginal probability of treatment for each node using Belief Propogation (or approximate inference for large networks) 
+% 	\item $P(Z_k = 1)$ will be higher 
+% \end{itemize}
 \end{frame}
 
-%------------------------------------------------
-
-\section{Table and Figure Examples}
-
-\subsection{Table}
-
 \begin{frame}
-	\frametitle{Table}
-	\framesubtitle{Subtitle} % Optional subtitle
-	
-	\begin{table}
-		\begin{tabular}{l l l}
-			\toprule
-			\textbf{Treatments} & \textbf{Response 1} & \textbf{Response 2}\\
-			\midrule
-			Treatment 1 & 0.0003262 & 0.562 \\
-			Treatment 2 & 0.0015681 & 0.910 \\
-			Treatment 3 & 0.0009271 & 0.296 \\
-			\bottomrule
-		\end{tabular}
-		\caption{Table caption}
-	\end{table}
+	\frametitle{Estimating Potentials}
+	\begin{itemize}
+		\item $P$ is a Gibbs Distribution that factorizes over $H$: \begin{align*}
+			P(X_1, X_2, \dots, X_n) = \frac{1}{Z} \prod_{i \in V} \phi_i(X_i)\prod_{(i, j) \in E}\phi_{i,j}(X_i, X_j) 
+		\end{align*}
+		\item Pairwise potentials represent the potential for influence, or ``strength'' of a social connection between two nodes
+		\item Model them as a function of edge probability, $p_{i,j}$: \begin{align*}
+			\phi_{i,j}(X_i, X_j) = 1 - p_{i,j}\mathbbm{1}\{{X_i \neq X_j}\}
+		\end{align*}
+		\item We can place a prior on edge probabilities, e.g. $p_{i,j} \sim $ Beta$(\alpha, \beta)$
+		\item Or model them some other way, e.g. latent space 
+	\end{itemize}
 \end{frame}
 
-%------------------------------------------------
-
-\subsection{Figure}
-
 \begin{frame}
-	\frametitle{Figure}
-	
-	% \begin{figure}
-	% 	\includegraphics[width=0.8\linewidth]{creodocs_logo.pdf}
-	% 	\caption{Creodocs logo.}
-	% \end{figure}
+	\frametitle{Estimating Potentials}
+	\begin{itemize}
+		\item Handcock et. al (2007), model $p_{i,j}$ using a logistic regression where the probability of an edge depends on euclidean distance in latent space \begin{align*}
+			\mbox{log-odds}(p_{i,j}) = \beta X_{i,j} - ||z_i - z_j||^2
+		\end{align*}
+		\item Estimate using MCMC, where we can also incorporate latent clusters with prior: \begin{displaymath}
+		z_i \sim \sum_{g = 1}^{G}\lambda_g \mbox{MVN}_d(\mu_g, \sigma_gI_g) 
+	  \end{displaymath}
+	\end{itemize}
 \end{frame}
 
-%------------------------------------------------
-
-\section{Mathematics}
 
 \begin{frame}
-	\frametitle{Definitions \& Examples}
-	
-	\begin{definition}
-		A \alert{prime number} is a number that has exactly two divisors.
-	\end{definition}
-	
-	\smallskip % Vertical whitespace
-	
-	\begin{example}
+	\frametitle{Estimating Node Exposure}
+	\begin{figure}
+		\includegraphics[width=0.7\linewidth]{example.png}
+		\caption{Exposure Probabilities}
+	\end{figure}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Estimating Causal Effects}
+	\begin{itemize}
+		\setlength\itemsep{1em}
+		\item With the exposure probabilities, we can estimate ATE ($\rho$) as: \begin{align*}
+			y_i = \alpha + \rho Z_i + \gamma (1 - Z_i) \pi_i + \varepsilon_i 
+		\end{align*}
+		\item $\gamma$ doesnt have any real causal interpretation :(
+		\item Much better suited to heterogeneous spillover effects 
+		\item Test by simulating data on two real-world social networks \\[0.5ex]
 		\begin{itemize}
-			\item 2 is prime (two divisors: 1 and 2).
-			\item 3 is prime (two divisors: 1 and 3).
-			\item 4 is not prime (\alert{three} divisors: 1, 2, and 4).
+		\setlength\itemsep{0.5em}
+			\item Eighth Graders: 55 students with edges between those who wanted to sit next to each other in class 
+			\item Aarhus Computer Science Department: 60 colleagues with edges between those who got lunch together in a given week 
+			\item $y_i \sim \mathcal{N}(\mu, \sigma^2)$, $\rho = 3$, spillover = $1.5$
 		\end{itemize}
-	\end{example}
-	
-	\smallskip % Vertical whitespace
-	
-	You can also use the \texttt{theorem}, \texttt{lemma}, \texttt{proof} and \texttt{corollary} environments.
+	\end{itemize}
 \end{frame}
-
-%------------------------------------------------
 
 \begin{frame}
-	\frametitle{Theorem, Corollary \& Proof}
-	
-	\begin{theorem}[Mass--energy equivalence]
-		$E = mc^2$
-	\end{theorem}
-	
-	\begin{corollary}
-		$x + y = y + x$
-	\end{corollary}
-	
-	\begin{proof}
-		$\omega + \phi = \epsilon$
-	\end{proof}
+	\frametitle{Simulation Results}
+	\resizebox{\textwidth}{!}{
+	% \begin{table}
+	% 	\caption{Simulation Results (True parameter: $\rho = 3$)}
+	% 	\label{table1}
+		% \centering
+		\begin{tabular}{ccccccc}
+		  \toprule
+		  & & \multicolumn{2}{c}{Eighth Graders} & & \multicolumn{2}{c}{Aarhus CS}              \\
+		  \cmidrule{3-4} \cmidrule{6-7}
+		  DGP & $\phi_{i,j}$ & $\bar{y}^1 - \bar{y}^0$ & $\rho$ & & $\bar{y}^1 - \bar{y}^0$ & $\rho$ \\
+		  \midrule
+		  \multirow{ 2}{*}{Neighbors} & Latent & 2.67 (0.22) & 3.03 (0.30) & & 2.31 (0.21) & 3.03 (0.43)    \\
+		  \cmidrule{2-7}
+		  & Beta & 2.66 (0.22) & 3.14 (0.38) & & 2.32 (0.21) & 3.63 (0.63)  \\
+		  \midrule
+		  \multirow{ 2}{*}{Latent}& Latent & 2.73 (0.22) & 2.93 (0.33)  & & 2.55 (0.21) & 2.93 (0.43)  \\
+		  \cmidrule{2-7}
+		  & Beta  & 2.72 (0.22) & 2.95 (0.35)  & & 2.54 (0.21) & 3.08 (0.61) \\
+		  \midrule
+		  \multirow{ 2}{*}{$p_{i,j} = 0.5$}& Latent & 2.55 (0.22) & 2.67 (0.38)  & & 2.31 (0.21) & 2.48 (0.46) \\
+		  \cmidrule{2-7} 
+		  & Beta  & 2.56 (0.23)& 2.81 (0.40)  & & 2.32 (0.21) & 2.64 (0.67)  \\
+		  \midrule
+		  \multirow{ 2}{*}{No Spillover}& Latent & 3.00 (0.21) & 3.00 (0.24)  & & 3.01 (0.19) & 3.01 (0.27) \\
+		  \cmidrule{2-7} 
+		  & Beta  & 3.00 (0.20) & 3.00 (0.25)  & & 2.99 (0.19) & 2.99 (0.38)  \\
+		  \bottomrule
+		\end{tabular}
+	% \end{table}
+	}
 \end{frame}
-
-%------------------------------------------------
 
 \begin{frame}
-	\frametitle{Equation}
-
-	\begin{equation}
-		\cos^3 \theta =\frac{1}{4}\cos\theta+\frac{3}{4}\cos 3\theta
-	\end{equation}
-\end{frame}
-
-%------------------------------------------------
-
-\begin{frame}[fragile] % Need to use the fragile option when verbatim is used in the slide
-	\frametitle{Verbatim}
-	
-	\begin{example}[Theorem Slide Code]
-		\begin{verbatim}
-			\begin{frame}
-				\frametitle{Theorem}
-				\begin{theorem}[Mass--energy equivalence]
-					$E = mc^2$
-				\end{theorem}
-		\end{frame}\end{verbatim} % Must be on the same line
-	\end{example}
-\end{frame}
-
-%------------------------------------------------
-
-\begin{frame}
-	Slide without title.
-\end{frame}
-
-%------------------------------------------------
-
-\section{Referencing}
-
-\begin{frame}
-	\frametitle{Citing References}
-	
-	An example of the \texttt{\textbackslash cite} command to cite within the presentation:
-	
-	\bigskip % Vertical whitespace
-	
-	% This statement requires citation \cite{p1,p2}.
-\end{frame}
-
-%------------------------------------------------
-
-\begin{frame} % Use [allowframebreaks] to allow automatic splitting across slides if the content is too long
-	\frametitle{References}
-	
-	\begin{thebibliography}{99} % Beamer does not support BibTeX so references must be inserted manually as below, you may need to use multiple columns and/or reduce the font size further if you have many references
-		\footnotesize % Reduce the font size in the bibliography
-		
-		\bibitem[Smith, 2022]{p1}
-			John Smith (2022)
-			\newblock Publication title
-			\newblock \emph{Journal Name} 12(3), 45 -- 678.
-			
-		\bibitem[Kennedy, 2023]{p2}
-			Annabelle Kennedy (2023)
-			\newblock Publication title
-			\newblock \emph{Journal Name} 12(3), 45 -- 678.
-	\end{thebibliography}
-\end{frame}
-
-%----------------------------------------------------------------------------------------
-%	ACKNOWLEDGMENTS SLIDE
-%----------------------------------------------------------------------------------------
-
-\begin{frame}
-	\frametitle{Acknowledgements}
-	
-	\begin{columns}[t] % The "c" option specifies centered vertical alignment while the "t" option is used for top vertical alignment
-		\begin{column}{0.45\textwidth} % Left column width
-			\textbf{Smith Lab}
-			\begin{itemize}
-				\item Alice Smith
-				\item Devon Brown
-			\end{itemize}
-			\textbf{Cook Lab}
-			\begin{itemize}
-				\item Margaret
-				\item Jennifer
-				\item Yuan
-			\end{itemize}
-		\end{column}		
-		\begin{column}{0.5\textwidth} % Right column width
-			\textbf{Funding}
-			\begin{itemize}
-				\item British Royal Navy
-				\item Norwegian Government
-			\end{itemize}
-		\end{column}
-	\end{columns}
+	\frametitle{Simulation Results: Heterogeneous Spillover}
+	\resizebox{\textwidth}{!}{
+	\begin{tabular}{cccccccc}
+		\toprule
+		& \multicolumn{3}{c}{Eighth Graders} & & \multicolumn{3}{c}{Aarhus CS}              \\
+		\cmidrule{2-4} \cmidrule{6-8}
+		$\phi_{i,j}$ & $\bar{y}^1 - \bar{y}^0$ & $\rho$ & $\gamma$ & & $\bar{y}^1 - \bar{y}^0$ & $\rho$ & $\gamma$ \\
+		\midrule
+		 Latent & 2.74 (0.21) & 2.95 (0.25) & 1.40 (0.39) & & 2.64 (0.20) & 2.99 (0.31) & 0.48 (0.25)    \\
+		\cmidrule{1-8}
+		Beta & 2.75 (0.21) & 2.99 (0.28) & 0.84 (0.40) & & 2.65 (0.20) & 3.06 (0.38) & 0.51 (0.36) \\
+		\bottomrule
+	\end{tabular}
+	}
 \end{frame}
 
 %----------------------------------------------------------------------------------------
@@ -498,9 +407,9 @@
 	\begin{center}
 		{\Huge The End}
 		
-		\bigskip\bigskip % Vertical whitespace
+		% \bigskip\bigskip % Vertical whitespace
 		
-		{\LARGE Questions? Comments?}
+		% {\LARGE Questions? Comments?}
 	\end{center}
 \end{frame}
 
