@@ -127,7 +127,8 @@ $P$, then, is defined as a Gibbs distribution that factorizes over $H$: \\
 By having each individual represented as a bernoulli random vairable in $H$, we can reformulate the problem of estimating the exposure probability for node $i$,  $\pi_i(\mathbf{Z})$, into 
 an inference problem, where we seek to infer marginal probability distributions for each node. Observe that for any treated unit, they are assumed to be already exposed, so $X_i = 1$ for all individuals $i$ where $Z_i = 1$. 
 This observation acts as our evidence in $P$ when performing inference on the unknown marginal distributions of the other nodes in $H$. Formally, we infer the posterior distribution $P(X_i\ |\ e)$, where $e = \{X_i = 1\ |\ Z_i = 1\}$. 
-This reformulation allows us to use a host of existing inference algorithms to learn the posterior marginals. 
+This reformulation allows us to use a host of existing inference algorithms to learn the posterior marginals. In practice, we use the Sum-Product Belief Propogation algorithm defined in \cite{koller}. In larger social networks where exact inference may be intractable, 
+approximation alogrithms can be used, although we do not examine this case. Since nodes not influenced by the treatment group have the posterior marginal distribution: $P(X_i = 1) = P(X_i = 0) = 0.5$, we let $\pi_i = P(X_i = 1) - P(X_i = 0)$ to obtain easily interpretable exposure probabilities.
 %Algorithm 1: Sum-Product BP 
 
 
@@ -190,7 +191,11 @@ In this case, we could interperent $\gamma \times \pi_i$ to be the partial effec
 In the case of homogeneous spillover effects, what we really desire is to be able to classify each non-treated unit into either the socially exposed ($C_i = 1$), or control group $(C_i = 0)$, as doing so 
 would allow for perfect identification of average spillover effects. There are a number of possible approaches. One might be assigning units with exposure probability sufficiently close to zero to the control group, 
 and having a similar condition for assigment to the expsoure group. Another may be to explicitly learn a classifier. If treatment assigment were confounded by latent or observed covariates, this may be possible without 
-taking the outcome of interest into account, since the treatment and exposure groups would have greater similarity than the controls. However, the setting of this paper assumes that treatment assigment is unconfounded, 
+taking the outcome of interest into account, since the treatment and exposure groups would have greater similarity than the controls. However, the setting of this paper assumes that treatment assigment is unconfounded. Under 
+the assumption that the joint distribution of outcomes and exposures, $P(y, \pi)$ is a mixture of two Gaussians—the control and exposure groups—we propose fitting the Gaussian Mixture Model: \begin{equation}
+  P(y, \pi | \mu, \Sigma, w) = \sum_{k = 1}^{2}w_k \mathcal{N}(y, \pi ; \mu_k, \Sigma_k)
+\end{equation} 
+And then estimating the average spillover effect as the difference in means: $\bar{y}^{k = 2} - \bar{y}^{k = 1}$, where $k \in \{1, 2\}$ indexes the control and expsoure groups, respectively.
 
 \section{Simulations}
 
@@ -200,11 +205,10 @@ edges represent colleagues who ate lunch together in a given week. We simlulate 
 where spillover is half of the average treatment effect. For each graph, we consider three possible data generating processes for the spillover effects. In the first, all neighbors of treated units are socially influenced. 
 In the second, social influence is propogated across each edge $(i, j)$ with probability $p_{i,j}$ according to the latent variable model (1), i.e. socially influenced neighbors of treated units can influence their neighbors etc. until all possible influence
 has propogated across the network. The third is the same as the second process except $p_{i,j} = 0.5$ for all edges in the network. We also test two different spesifications for the edge potentials in each scenario. In the first, the edge potentials accord with the latent variable model (1), and in the second we assume that $p_{i,j} \sim$ Beta$(5, 5)$. The following table report the point estimates of the OLS regression (2) and corresponding standard errors following 1,000 simulated 
-treatment assigments on each of the possible combinations of data generating processes, edge potentials, and social networks. In the setting of this paper, since treatment assigment is unconfounded 
-
+treatment assigments on each of the possible combinations of data generating processes, edge potentials, and social networks. 
 \begin{table}[htbp]
   \caption{Simulation Results (True parameter: $\rho = 3$)}
-  \label{sample-table}
+  \label{table1}
   \centering
   \begin{tabular}{ccccccc}
     \toprule
@@ -212,23 +216,51 @@ treatment assigments on each of the possible combinations of data generating pro
     \cmidrule{3-4} \cmidrule{6-7}
     DGP & $\phi_{i,j}$ & $\bar{y}^1 - \bar{y}^0$ & $\rho$ & & $\bar{y}^1 - \bar{y}^0$ & $\rho$ \\
     \midrule
-    \multirow{ 2}{*}{Neighbors} & Latent & 2.67 & 3.03 (0.30) & & 2.31 & 3.03 (0.43)    \\
+    \multirow{ 2}{*}{Neighbors} & Latent & 2.67 (0.22) & 3.03 (0.30) & & 2.31 & 3.03 (0.43)    \\
     \cmidrule{2-7}
-    & Beta & 2.66 & 3.14 (0.38) & & 2.32 & 3.63 (0.63)  \\
+    & Beta & 2.66 (0.22) & 3.14 (0.38) & & 2.32 & 3.63 (0.63)  \\
     \midrule
-    \multirow{ 2}{*}{Latent}& Latent & 2.73 & 2.93 (0.33)  & & 2.55 & 2.93 (0.43)  \\
+    \multirow{ 2}{*}{Latent}& Latent & 2.73 (0.22) & 2.93 (0.33)  & & 2.55 & 2.93 (0.43)  \\
     \cmidrule{2-7}
-    & Beta  & 2.72 & 2.95 (0.35)  & & 2.54 & 3.08 (0.61) \\
+    & Beta  & 2.72 (0.22) & 2.95 (0.35)  & & 2.54 & 3.08 (0.61) \\
     \midrule
-    \multirow{ 2}{*}{$p_{i,j} = 0.5$}& Latent & 2.55 & 2.67 (0.38)  & & 2.31 & 2.48 (0.46) \\
+    \multirow{ 2}{*}{$p_{i,j} = 0.5$}& Latent & 2.55 (0.22) & 2.67 (0.38)  & & 2.31 & 2.48 (0.46) \\
     \cmidrule{2-7} 
-    & Beta  & 2.56 & 2.81 (0.40)  & & 2.32 & 2.64 (0.67)  \\
+    & Beta  & 2.56 (0.22)& 2.81 (0.40)  & & 2.32 & 2.64 (0.67)  \\
     \bottomrule
   \end{tabular}
 \end{table}
-The estimates for $\rho$
 
-\section{Discussion}
+In general, the point estimates for $\rho$ are certainly an improvement over the naïve estimate $\bar{y}^{1} - \bar{y}^{0}$. However, 
+performance was quite varied across the different data generating processes. In particular, the model was not well suited to capture the effects of the third DGP ($p_{i,j} = 0.5$), even in the 
+case of the Beta prior on the edge potentials, which had quite high Standard Errors for the Aarhaus Computer Science dataset. Still, in the first two data generating processes, 
+which are quite different from one another, our model is able to reliably detect the presence, and extent of spillover effects in the data, isolating the average treatment effect as desired. 
+Next, we test performance when spillover effects are heterogeneous, which is the natural setting for our model. In the following table, we report results from an identical simulation as above, instead 
+now spillover effects are propogated across each edge $(i-j)$ proportional to $p_{i,j}$ according to the latent variable model (1). We do this by conducting a breadth first traversal over the graph where 
+the starting queue is the treatment group. 
+\begin{table}[htbp]
+  \caption{Heterogeneous Spillover Effects Simulation Results (True parameter: $\rho = 3$)}
+  \label{table2}
+  \centering
+  \begin{tabular}{cccccccc}
+    \toprule
+    & \multicolumn{3}{c}{Eighth Graders} & & \multicolumn{3}{c}{Aarhaus CS}              \\
+    \cmidrule{2-4} \cmidrule{6-8}
+    $\phi_{i,j}$ & $\bar{y}^1 - \bar{y}^0$ & $\rho$ & $\gamma$ & & $\bar{y}^1 - \bar{y}^0$ & $\rho$ & $\gamma$ \\
+    \midrule
+     Latent & 2.74 (0.21) & 2.95 (0.25) & 1.40 (0.39) & & 2.31 & 3.03 (0.43)    \\
+    \cmidrule{1-8}
+    Beta & 2.75 (0.21) & 2.99 (0.28) & 0.84 (0.40) & & 2.32 & 3.63 (0.63)  \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+As expected, 
+
+\section{Conclusion}
+
+This paper proposes a probabilistic graphical model based framework for causal inference under interference in social networks. 
+
 
 
 \bibliography{rep}

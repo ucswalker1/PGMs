@@ -1,4 +1,4 @@
-\begin{thebibliography}{5}
+\begin{thebibliography}{6}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -32,6 +32,11 @@ Peter~M. Aronow and Cyrus Samii.
 \newblock \emph{The Annals of Applied Statistics}, 11\penalty0 (4):\penalty0 1912 -- 1947, 2017.
 \newblock \doi{10.1214/16-AOAS1005}.
 \newblock URL \url{https://doi.org/10.1214/16-AOAS1005}.
+
+\bibitem[Daphne~Koller(2009)]{koller}
+Nir~Friedman Daphne~Koller.
+\newblock \emph{Probabilistic Graphical Models: Principles and Techniques}.
+\newblock Massachusetts Institute of Technology, 2009.
 
 \bibitem[Handcock et~al.(2007)Handcock, Raftery, and Tantrum]{Handcock}
 Mark~S. Handcock, Adrian~E. Raftery, and Jeremy~M. Tantrum.
