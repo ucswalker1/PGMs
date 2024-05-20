@@ -31,9 +31,14 @@
 \usepackage{xcolor}         % colors
 \usepackage{multirow}
 
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{graphicx}
+\usepackage{subcaption}
+
 \bibliographystyle{unsrtnat}
 
-\title{Causal Effects Under Interference}
+\title{Causal Effects Under Interference: A Markov Random Field Approach}
 
 
 % The \author macro works with any number of authors. There are two commands
@@ -119,16 +124,34 @@ the effect of treatment assigment is homogeneous. Furthermore, we assume that so
 
 \section{Estimating Exposures and Causal Effects}
 
-We propose modeling the spread of influence in the social network as a Pairwise Markov Random Field, defined as $B = (P, H)$, where $H = (V, E)$ is an isomporphism of the social network $G$, given by the bijection $f: G(V) \mapsto H(V)$ where $f(v_i) = X_i \sim $ Bernoulli$(p)$, i.e. $H$ is an undirected graph with the skeleton of $G$ where each node in $H(V)$ is a Bernoulli random variable. 
+We propose modeling the spread of influence in the social network as a Pairwise Markov Random Field, defined as $B = (P, H)$, where $H = (V, E)$ is an isomorphic to the social network $G$, given by the bijection $f: G(V) \mapsto H(V)$ where $f(v_i) = X_i \sim $ Bernoulli$(p)$, i.e. $H$ is an undirected graph with the skeleton of $G$ where each node in $H(V)$ is a Bernoulli random variable. 
 $P$, then, is defined as a Gibbs distribution that factorizes over $H$: \\
 \begin{displaymath}
   P(X_1, X_2, \dots, X_n) = \frac{1}{Z}\prod_{i \in V} \phi_i(X_i)\prod_{(i, j) \in E}\phi_{i,j}(X_i, X_j) \\[0.5ex]
 \end{displaymath}
-By having each individual represented as a bernoulli random vairable in $H$, we can reformulate the problem of estimating the exposure probability for node $i$,  $\pi_i(\mathbf{Z})$, into 
-an inference problem, where we seek to infer marginal probability distributions for each node. Observe that for any treated unit, they are assumed to be already exposed, so $X_i = 1$ for all individuals $i$ where $Z_i = 1$. 
+By having each individual represented as a Bernoulli random vairable in $H$, we can reformulate the problem of estimating the exposure probability for node $i$,  $\pi_i$, into 
+an inference problem where we seek to infer marginal probability distributions for each node. Observe that for any treated unit, they are assumed to be already exposed, so $X_i = 1$ for all individuals $i$ where $Z_i = 1$. 
 This observation acts as our evidence in $P$ when performing inference on the unknown marginal distributions of the other nodes in $H$. Formally, we infer the posterior distribution $P(X_i\ |\ e)$, where $e = \{X_i = 1\ |\ Z_i = 1\}$. 
-This reformulation allows us to use a host of existing inference algorithms to learn the posterior marginals. In practice, we use the Sum-Product Belief Propogation algorithm defined in \cite{koller}. In larger social networks where exact inference may be intractable, 
-approximation alogrithms can be used, although we do not examine this case. Since nodes not influenced by the treatment group have the posterior marginal distribution: $P(X_i = 1) = P(X_i = 0) = 0.5$, we let $\pi_i = P(X_i = 1) - P(X_i = 0)$ to obtain easily interpretable exposure probabilities.
+This reformulation allows us to use a host of existing inference algorithms to learn the posterior marginals. In practice, we define a clique tree $\mathcal{T}$ for $B$, and then use the Sum-Product Belief Propogation algorithm (CTree-SP-Calibrate) defined in \cite{koller}. 
+\begin{algorithm}[h]
+  \caption{CTree-SP-Calibrate}
+  % \label{algo1}
+   \begin{algorithmic}[1]
+       \Require $\Phi, \mathcal{T}$
+       \State Initialize Cliques
+       \While{$\exists \ i, j$ such that $i$ is ready to transmit to $j$}
+       \State $\psi(\mathcal{C}_i) \leftarrow \psi_i \cdot \prod_{k \in Nb(i) - j}m_{k \rightarrow i}$
+       \State $m_{i \rightarrow j}(S_{i,j}) \leftarrow \sum_{\mathcal{C}_i - S_{i,j}}\psi(\mathcal{C}_i)$
+       \EndWhile
+       \For{each clique $i$}
+       \State $\beta_i \leftarrow \psi_i \cdot \prod_{k \in Nb(i) - j}m_{k \rightarrow i}$
+       \EndFor \\
+
+       \Return $\{\beta_i\}$
+\end{algorithmic}
+\end{algorithm}
+In larger social networks where exact inference may be intractable, 
+approximation alogrithms can be used, although we do not examine this case. Since nodes not influenced by the treatment group have the posterior marginal distribution: $P(X_i = 1) = P(X_i = 0) = 0.5$, we let $\pi_i = P(X_i = 1) - P(X_i = 0)$ to obtain easily interpretable exposure probabilities on the interval $[0, 1]$.
 %Algorithm 1: Sum-Product BP 
 
 
@@ -202,7 +225,7 @@ And then estimating the average spillover effect as the difference in means: $\b
 In order to test the performance of our proposed methods, we simulate random experiments on two real world social networks. The first is a group of 55 eigth-graders, with edges between 
 students who were surveyed on which other students they would like to sit next to in class. The second data set is a social network between 61 employees of the Aarhus Computer Science Department, where 
 edges represent colleagues who ate lunch together in a given week. We simlulate the outcome of interest drawing from a normal distribution $y_{i} \sim \mathcal{N}(\mu, \sigma^2)$, and then consider a dilated effects scenario, 
-where spillover is half of the average treatment effect. For each graph, we consider three possible data generating processes for the spillover effects. In the first, all neighbors of treated units are socially influenced. 
+where spillover is half of the average treatment effect. For each graph, we consider three possible data generating processes for the spillover effects, and a fourth where there are no spillover effects. In the first, all neighbors of treated units are socially influenced. 
 In the second, social influence is propogated across each edge $(i, j)$ with probability $p_{i,j}$ according to the latent variable model (1), i.e. socially influenced neighbors of treated units can influence their neighbors etc. until all possible influence
 has propogated across the network. The third is the same as the second process except $p_{i,j} = 0.5$ for all edges in the network. We also test two different spesifications for the edge potentials in each scenario. In the first, the edge potentials accord with the latent variable model (1), and in the second we assume that $p_{i,j} \sim$ Beta$(5, 5)$. The following table report the point estimates of the OLS regression (2) and corresponding standard errors following 1,000 simulated 
 treatment assigments on each of the possible combinations of data generating processes, edge potentials, and social networks. 
@@ -216,26 +239,30 @@ treatment assigments on each of the possible combinations of data generating pro
     \cmidrule{3-4} \cmidrule{6-7}
     DGP & $\phi_{i,j}$ & $\bar{y}^1 - \bar{y}^0$ & $\rho$ & & $\bar{y}^1 - \bar{y}^0$ & $\rho$ \\
     \midrule
-    \multirow{ 2}{*}{Neighbors} & Latent & 2.67 (0.22) & 3.03 (0.30) & & 2.31 & 3.03 (0.43)    \\
+    \multirow{ 2}{*}{Neighbors} & Latent & 2.67 (0.22) & 3.03 (0.30) & & 2.31 (0.21) & 3.03 (0.43)    \\
     \cmidrule{2-7}
-    & Beta & 2.66 (0.22) & 3.14 (0.38) & & 2.32 & 3.63 (0.63)  \\
+    & Beta & 2.66 (0.22) & 3.14 (0.38) & & 2.32 (0.21) & 3.63 (0.63)  \\
     \midrule
-    \multirow{ 2}{*}{Latent}& Latent & 2.73 (0.22) & 2.93 (0.33)  & & 2.55 & 2.93 (0.43)  \\
+    \multirow{ 2}{*}{Latent}& Latent & 2.73 (0.22) & 2.93 (0.33)  & & 2.55 (0.21) & 2.93 (0.43)  \\
     \cmidrule{2-7}
-    & Beta  & 2.72 (0.22) & 2.95 (0.35)  & & 2.54 & 3.08 (0.61) \\
+    & Beta  & 2.72 (0.22) & 2.95 (0.35)  & & 2.54 (0.21) & 3.08 (0.61) \\
     \midrule
-    \multirow{ 2}{*}{$p_{i,j} = 0.5$}& Latent & 2.55 (0.22) & 2.67 (0.38)  & & 2.31 & 2.48 (0.46) \\
+    \multirow{ 2}{*}{$p_{i,j} = 0.5$}& Latent & 2.55 (0.22) & 2.67 (0.38)  & & 2.31 (0.21) & 2.48 (0.46) \\
     \cmidrule{2-7} 
-    & Beta  & 2.56 (0.22)& 2.81 (0.40)  & & 2.32 & 2.64 (0.67)  \\
+    & Beta  & 2.56 (0.23)& 2.81 (0.40)  & & 2.32 (0.21) & 2.64 (0.67)  \\
+    \midrule
+    \multirow{ 2}{*}{No Spillover}& Latent & 3.00 (0.21) & 3.00 (0.24)  & & 3.01 (0.19) & 3.01 (0.27) \\
+    \cmidrule{2-7} 
+    & Beta  & 3.00 (0.20) & 3.00 (0.25)  & & 2.99 (0.19) & 2.99 (0.38)  \\
     \bottomrule
   \end{tabular}
 \end{table}
 
-In general, the point estimates for $\rho$ are certainly an improvement over the naïve estimate $\bar{y}^{1} - \bar{y}^{0}$. However, 
+In general, the point estimates for $\rho$ are an improvement over the naïve estimate $\bar{y}^{1} - \bar{y}^{0}$. However, 
 performance was quite varied across the different data generating processes. In particular, the model was not well suited to capture the effects of the third DGP ($p_{i,j} = 0.5$), even in the 
 case of the Beta prior on the edge potentials, which had quite high Standard Errors for the Aarhaus Computer Science dataset. Still, in the first two data generating processes, 
-which are quite different from one another, our model is able to reliably detect the presence, and extent of spillover effects in the data, isolating the average treatment effect as desired. 
-Next, we test performance when spillover effects are heterogeneous, which is the natural setting for our model. In the following table, we report results from an identical simulation as above, instead 
+which are quite different from one another, our model is able to reliably detect the presence, and extent of spillover effects in the data, isolating the average treatment effect as desired. Furthermore, 
+in the case of no spillover effects, we still get the correct point estimate, demonstrating the usefulness of our framework. Next, we test performance when spillover effects are heterogeneous, which is the natural setting for our model. In the following table, we report results from an identical simulation as above, instead 
 now spillover effects are propogated across each edge $(i-j)$ proportional to $p_{i,j}$ according to the latent variable model (1). We do this by conducting a breadth first traversal over the graph where 
 the starting queue is the treatment group. 
 \begin{table}[htbp]
@@ -248,18 +275,54 @@ the starting queue is the treatment group.
     \cmidrule{2-4} \cmidrule{6-8}
     $\phi_{i,j}$ & $\bar{y}^1 - \bar{y}^0$ & $\rho$ & $\gamma$ & & $\bar{y}^1 - \bar{y}^0$ & $\rho$ & $\gamma$ \\
     \midrule
-     Latent & 2.74 (0.21) & 2.95 (0.25) & 1.40 (0.39) & & 2.31 & 3.03 (0.43)    \\
+     Latent & 2.74 (0.21) & 2.95 (0.25) & 1.40 (0.39) & & 2.64 (0.20) & 2.99 (0.31) & 0.48 (0.25)    \\
     \cmidrule{1-8}
-    Beta & 2.75 (0.21) & 2.99 (0.28) & 0.84 (0.40) & & 2.32 & 3.63 (0.63)  \\
+    Beta & 2.75 (0.21) & 2.99 (0.28) & 0.84 (0.40) & & 2.65 (0.20) & 3.06 (0.38) & 0.51 (0.36) \\
     \bottomrule
   \end{tabular}
 \end{table}
 
-As expected, 
+As expected, when the underlying data generating process consists of heterogeneous spillover effects, the model performs better, particularly with respect 
+to standard error, which is quite high in the homogeneous case. Somewhat surprisingly, the Beta prior performs decently well on both graphs, despite the spillover 
+effects propogating accoring to the latent variable model. 
+
+Finally, we test the proposed Gaussian Mixure Model (3) using two of the previous data generating processes. We 
+use the latent variable model (1) to determine edge potentials. Below, Figure 1 displays the fitted GMMs. The 
+corresponding point estimates for the average spillover effect were $1.67$ (DGP $p_{i,j} = 0.5$) and $1.61$ (DGP Neighbors), where $1.5$ is the value of the true parameter. 
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}[b]{0.45\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{gmmpij.png}
+      \caption{$p_{ij} = 0.5$}
+      \label{fig:fig1}
+      \vspace{0.25cm}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.45\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{gmmnbrs.png}
+      \caption{Neighbors}
+      \label{fig:fig2}
+      \vspace{0.25cm}
+  \end{subfigure}
+  \caption{Gaussian Mixture Model Negative Log Likelihood (X-axis: $\pi$, Y-axis: $y$)}
+  \label{fig:side_by_side}
+\end{figure}
+
+While the GMM produces reasonable estimates for the average spillover effects, it does require imposing potentially undesireable assumptions, in 
+addition to using knowledge of unit-level outcomes. For these reasons, it is unlikely to generalize well to other experimental settings.   
 
 \section{Conclusion}
 
-This paper proposes a probabilistic graphical model based framework for causal inference under interference in social networks. 
+This paper proposes a probabilistic graphical model based framework for causal inference under interference in social networks. In particular, 
+we define a pairwise Markov Random Field over the social network, that allows us to infer exposure probabilities given a particular instantiation of the 
+random experiment. We examine the performance of the proposed framework in a variety of plausible settings and data generating processes for spillover effects,
+and find that it can reliably detect the presence (or non-presence) of spillover. While the Markov Random Field approach is well suited to estimating the average treatment effect, 
+more research is necessary to develop reliable and flexible estimators that extend this framework to estimate the spillover effects directly. 
+
+
 
 
 
