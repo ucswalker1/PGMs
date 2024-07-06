@@ -5,6 +5,7 @@
 \usepackage{caption}
 \usepackage{graphicx}
 \usepackage{subcaption}
+\usepackage{hyperref}
 
 \DeclareMathOperator*{\argmax}{arg\,max}
 \DeclareMathOperator*{\argmin}{arg\,min}
@@ -58,7 +59,43 @@
         &= \argmin_\theta \ D(P || Q(X ; \theta))
     \end{align*}
     Therefore, the MLE solution $\theta^*$ minimizes the KL-Divergence $D(P || Q(X ; \theta))$, and is equivalent to solving for the M-projection $D(P||Q)$. 
-    \item 
+    \item Since $D(Q || P) = \infty$ for any $Q(X, Y)$ such that $Q(X)Q(Y) > 0$ where $P(X, Y) = 0$, there are three possible sets of solutions for minimizing $D(Q || P)$. \begin{enumerate}[1.]
+        \item $Q(X = 3)Q(Y = 3) > 0$, so $Q(X = x) = Q(Y = y) = 0$ for $x, y \in \{1, 2, 4\}$
+        \item $Q(X = 4)Q(Y = 4) > 0$, so $Q(X = x) = Q(Y = y) = 0$ for $x, y \in \{1, 2, 3\}$
+        \item $Q(X = 1)Q(Y = 1) , Q(X = 1)Q(Y = 2), Q(X = 2)Q(Y = 1)$ and $Q(X = 2)Q(Y = 2) > 0$, so $Q(X = x) = Q(Y = y) = 0$ for $x, y \in \{3, 4\}$
+    \end{enumerate}
+    The three distinct minima are those within each of these possible sets. It is trivial to see that the solutions to (1) and (2) are $Q^*_1(X) = Q^*_1(Y) = (0, 0, 1, 0)$ and $Q^*_2(X) = Q^*_1(Y) = (0, 0, 0, 1)$, respectively. The KL-Divergence for these minima is: \begin{align*}
+        D(Q^*_1 || P) &= D(Q^*_2 || P) = \sum_{X, Y}Q(X)Q(Y)\log \frac{Q(X)Q(Y)}{P(X, Y)} = \log \frac{1}{1/4} = \log 4
+    \end{align*}
+    For the third case we have the optimization problem: \begin{align*}
+        Q^*_3 = \argmin_Q D(Q || P) \ \ st. \ \ \sum_{X}{Q(X)} = \sum_Y Q(Y) = 1, P(X = 4) = P(X = 3) = P(Y = 4) = P(Y = 3) = 0
+    \end{align*}
+    With the corresponding Lagrangian:
+    %  \begin{align*}
+    %     L(Q, \lambda) &= \sum_{x = 1}^2\sum_{y = 1}^2Q(X = x)Q(Y = y) \log \frac{Q(X = x)Q(Y = y)}{P(X = x, Y = y)} + \lambda_0 \bigg( \sum_{X} Q(X) - 1 \bigg) + \lambda_1 \bigg( \sum_{Y} Q(Y) - 1 \bigg) \\[0.5ex]
+    %     &= - \bigg(\sum_{x = 1}^2\sum_{y = 1}^2Q(X = x)Q(Y = y) \log P(X = x, Y = y)\bigg) - H(Q(X)) - H(Q(Y)) \\[0.5ex]
+    %     &= \log(8) - H(Q(X)) - H(Q(Y)) +  \lambda_0 \bigg( \sum_{X} Q(X) - 1 \bigg) + \lambda_1 \bigg( \sum_{Y} Q(Y) - 1 \bigg) 
+    % \end{align*}
+    \begin{align*}
+        \begin{split}
+            L(Q, \lambda) {}&= \sum_{x = 1}^2\sum_{y = 1}^2Q(X = x)Q(Y = y) \log \frac{Q(X = x)Q(Y = y)}{P(X = x, Y = y)} + \lambda_0 \bigg( \sum_{X} Q(X) - 1 \bigg) + \lambda_1 \bigg( \sum_{Y} Q(Y) - 1 \bigg)
+        \end{split}\\[0.5ex]
+        \begin{split}
+            {}&=  - \bigg(\sum_{x = 1}^2\sum_{y = 1}^2Q(X = x)Q(Y = y) \log P(X = x, Y = y)\bigg) - H(Q(X)) - H(Q(Y))\\
+                & \ \ \ \  \ \ + \lambda_0 \bigg( \sum_{X} Q(X) - 1 \bigg) + \lambda_1 \bigg( \sum_{Y} Q(Y) - 1 \bigg)
+        \end{split}\\[0.5ex]
+        \begin{split}
+            {}&= \log(8) - H(Q(X)) - H(Q(Y)) +  \lambda_0 \bigg( \sum_{X} Q(X) - 1 \bigg) + \lambda_1 \bigg( \sum_{Y} Q(Y) - 1 \bigg) 
+        \end{split}
+    \end{align*}
+    Taking the partial derivative with respect to $Q(X)$ and $\lambda_0$ yields \begin{align*}
+        \frac{\partial L}{\partial Q(X)} &= - \log Q(X) - 1 + \lambda_0 = 0 , \ \ \ \frac{\partial L}{\partial \lambda_0} =  \sum_{X}Q(X) - 1 = 0\\[1.0ex]
+        &Q(X = x) = \exp(-1 + \lambda_0) \ \ \ \ \ \ \ \ \sum_{x = 1}^{2}Q(X = x) = 1 
+    \end{align*}
+    So $Q^*_3(X) = (\frac{1}{2}, \frac{1}{2}, 0, 0)$. Taking the parital derivative with respect to $Q(Y)$ and $\lambda_1$ similarly yields $Q^*_3(Y) = (\frac{1}{2}, \frac{1}{2}, 0, 0)$. The KL-Divergence for this minimum is: \begin{align*}
+        D(Q^*_3 || P) =  \log \frac{1/4}{1/8} = \log 2
+    \end{align*}
+    If we set $Q(X, Y) = P(X)P(Y)$, then $D(Q||P) = \infty$, since there are $Q(X, Y) > 0$ where $P(X, Y) = 0$. 
 \end{enumerate}
 \textbf{2.} 
 \begin{enumerate}[(a)]
@@ -133,12 +170,16 @@
         So $P(0, 0, 1) \leq 0.1$ and $P(0, 0, 0) \leq 0.1$, but $P(0, 0, 1) + P(0, 0, 0) = 0.4$, a contradiction. So the pseudo-marginals can't constitute a vaild distribution.
     \end{enumerate}
     \item \begin{align*}
-        P_{\Phi}(A, B) - \beta_1(A, B) &= \sum_{C, D} P_{\Phi}(A, B, C, D) - \sum_{C, D} P_{\Phi}(A, B, C, D) r(A, D) \\
-        &= P_{\Phi}(A, B) - P_{\Phi}(A, B) \sum_{D}r(A, D)
+        P_{\Phi}(A, B) - \beta_1(A, B) &= \sum_{C, D}\bigg(P_{\Phi}(A, B, C, D) - P_{\mathcal{T}}(A, B, C, D)\bigg) \\
+        &= \sum_{C, D} P_{\mathcal{T}}(A, B, C, D) (r(A, D) - 1)
     \end{align*}
-    So $\beta_1(A, B) =  P_{\Phi}(A, B) \sum_{D}r(A, D)$, and we have a bound on the error for the estimated marginal $\beta_1(A, B)$
+    Letting $r_{min}(A) = \min_D r(A, D)$ and $r_{max}(A) = \max_D r(A, D)$, \begin{align*}
+        \sum_{C, D} P_{\mathcal{T}}(A, B, C, D) (r_{min}(A) - 1) \leq \  &P_{\Phi}(A, B) - \beta_1(A, B) \leq \sum_{C, D} P_{\mathcal{T}}(A, B, C, D) (r_{max}(A) - 1) \\[0.5ex]
+        \beta_1(A, B)(r_{min} - 1) \leq \ & P_{\Phi}(A, B) - \beta_1(A, B) \leq \beta_1(A, B)(r_{max} - 1)
+    \end{align*}
 \end{enumerate}
-\textbf{4.} \begin{enumerate}[(a)]
+\newpage
+\textbf{4.} \href{https://colab.research.google.com/drive/18bs5-Mdrc9UFk1NuaMLjxyQVVzHRkCCu?usp=sharing}{\textbf{Link To Code}} \begin{enumerate}[(a)]
     \item \textcolor{white}{{x}}
     \begin{table}[H]
         \centering

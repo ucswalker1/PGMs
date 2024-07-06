@@ -231,7 +231,7 @@
 	\begin{itemize}
 		\setlength\itemsep{1em}
 		\item Clustering: Only need SUTVA to hold between larger groups, eg. schools instead of students 
-		\item Exposure mapping: Researcher specifies some grouping ex. \begin{align*}
+		\item Exposure mapping: Researcher specifies some grouping e.g. \begin{align*}
 			f(\mathbf{z}, \theta_i) = \begin{cases}
 				d_{11} \ &(\text{Direct + Indirect Exposure}) \\
 				d_{10} \ &(\text{Direct Exposure})\\ 
@@ -261,7 +261,7 @@
 	\begin{itemize}
 		\setlength\itemsep{1em}
 		\item Define a Pairwise Markov Random Field $B = (P, H)$ where $H$ has the same structure as $G$
-		\item Each node in the social network becoms a Bernoulli random variable $X_i$ in $H$
+		\item Each node in the social network becomes a Bernoulli random variable $X_i$ in $H$
 		% \begin{align*}
 		% 	\phi(X_i = 1) = \phi(X_i = 0)
 		% \end{align*}
@@ -312,7 +312,7 @@
 	\frametitle{Estimating Potentials}
 	\begin{itemize}
 		\item Handcock et. al (2007), model $p_{i,j}$ using a logistic regression where the probability of an edge depends on euclidean distance in latent space \begin{align*}
-			\mbox{log-odds}(p_{i,j}) = \beta X_{i,j} - ||z_i - z_j||^2
+			\mbox{log-odds}(p_{i,j}) = \beta X_{i,j} - |z_i - z_j|
 		\end{align*}
 		\item Estimate using MCMC, where we can also incorporate latent clusters with prior: \begin{displaymath}
 		z_i \sim \sum_{g = 1}^{G}\lambda_g \mbox{MVN}_d(\mu_g, \sigma_gI_g) 

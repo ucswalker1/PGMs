@@ -1,14 +1,15 @@
 # Fdb version 4
-["bibtex report"] 1716232575 "report.aux" "report.bbl" "report" 1716232697 0
+["bibtex report"] 1716232575 "report.aux" "report.bbl" "report" 1716316437 0
   "./rep.bib" 1716224223 5732 70993e48269dbaaa01c1a3d0615137aa ""
   "/usr/local/texlive/2023/texmf-dist/bibtex/bst/natbib/unsrtnat.bst" 1233624470 24550 a41a6405f4de768c43e871d9fbce2bc8 ""
-  "report.aux" 1716232697 3324 54440341fe20287899fed94581c96ce7 "pdflatex"
+  "report.aux" 1716316437 3324 54440341fe20287899fed94581c96ce7 "pdflatex"
   (generated)
   "report.bbl"
   "report.blg"
   (rewritten before read)
-["pdflatex"] 1716232696 "/Users/calvinwalker/Documents/Coursework/PGM/project/report/report.tex" "report.pdf" "report" 1716232697 0
-  "/Users/calvinwalker/Documents/Coursework/PGM/project/report/report.tex" 1716232696 24905 e05a640e930481ef9a05c76a66b3ec9d ""
+["pdflatex"] 1716316436 "/Users/calvinwalker/Documents/Coursework/PGM/project/report/report.tex" "report.pdf" "report" 1716316437 0
+  "/Users/calvinwalker/Documents/Coursework/PGM/project/report/report.tex" 1716316436 24965 abcef9c152e0669b0aff974b086f3a09 ""
+  "/Users/calvinwalker/Library/texlive/2023/texmf-var/fonts/pk/ljfour/public/bbm/bbm10.600pk" 1698279222 6964 8fbe93c5de28a62d36dd49e0a97807e3 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/base/8r.enc" 1165713224 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc" 1136849721 2971 def0b6c1f0b107b3b936def894055589 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
@@ -27,6 +28,11 @@
   "/usr/local/texlive/2023/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm10.tfm" 1246382020 908 2921f8a10601f252058503cc6570e581 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm5.tfm" 1246382020 940 75ac932a52f80982a9f8ea75d03a34cf ""
   "/usr/local/texlive/2023/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm7.tfm" 1246382020 940 228d6584342e91276bf566bcf9716b83 ""
+  "/usr/local/texlive/2023/texmf-dist/fonts/tfm/public/bbm/bbm10.tfm" 1227036886 560 39fd35b5e4a6aca3672660cc548ba860 ""
+  "/usr/local/texlive/2023/texmf-dist/fonts/tfm/public/bbm/bbm5.tfm" 1227036886 556 9c04e2d7f25768427a52589d484d3199 ""
+  "/usr/local/texlive/2023/texmf-dist/fonts/tfm/public/bbm/bbm6.tfm" 1227036886 560 4c5ff0e6c23877f3f630ae9d8ef92c6e ""
+  "/usr/local/texlive/2023/texmf-dist/fonts/tfm/public/bbm/bbm7.tfm" 1227036886 560 ab71d518408103034050efd8ebc8a16a ""
+  "/usr/local/texlive/2023/texmf-dist/fonts/tfm/public/bbm/bbm9.tfm" 1227036886 564 538e51111886634ef38425dfff2e2694 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/tfm/public/cm/cmbx10.tfm" 1136768653 1328 c834bbb027764024c09d3d2bf908b5f0 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/tfm/public/cm/cmbx5.tfm" 1136768653 1332 f817c21a1ba54560425663374f1b651a ""
   "/usr/local/texlive/2023/texmf-dist/fonts/tfm/public/cm/cmbx6.tfm" 1136768653 1344 8a0be4fe4d376203000810ad4dc81558 ""
@@ -88,6 +94,8 @@
   "/usr/local/texlive/2023/texmf-dist/tex/latex/base/inputenc.sty" 1654720880 5048 84b05796b49b69e2d4257d537721c960 ""
   "/usr/local/texlive/2023/texmf-dist/tex/latex/base/size10.clo" 1667332637 8448 c33a4e1cb35cee9b33c2b21033b73e39 ""
   "/usr/local/texlive/2023/texmf-dist/tex/latex/base/t1cmtt.fd" 1667332637 2443 f9c272838e65ac147422f32fe87b76a1 ""
+  "/usr/local/texlive/2023/texmf-dist/tex/latex/bbm-macros/bbm.sty" 1191314257 1644 1e0d54b051369c3f457872824cac219f ""
+  "/usr/local/texlive/2023/texmf-dist/tex/latex/bbm-macros/ubbm.fd" 1191314257 2132 62f898e14cad3357133b5cbf57b61c0a ""
   "/usr/local/texlive/2023/texmf-dist/tex/latex/booktabs/booktabs.sty" 1579038678 6078 f1cb470c9199e7110a27851508ed7a5c ""
   "/usr/local/texlive/2023/texmf-dist/tex/latex/caption/caption.sty" 1678653221 55778 14d5c99aa26410e440820bb9ea5b8b3a ""
   "/usr/local/texlive/2023/texmf-dist/tex/latex/caption/caption3.sty" 1678653221 71836 1a735454ad10692452eb2f2fc37f3865 ""
@@ -139,10 +147,10 @@
   "gmmnbrs.png" 1716231410 143360 627efb748cf27f0fee3e71f50ab52d3f ""
   "gmmpij.png" 1716231244 120047 deb32bf026dbfd83629d9a7f863b8242 ""
   "neurips_2023.sty" 1715900914 11199 d125ec7dc03abcc920722bef77c6ad06 ""
-  "report.aux" 1716232697 3324 54440341fe20287899fed94581c96ce7 "pdflatex"
+  "report.aux" 1716316437 3324 54440341fe20287899fed94581c96ce7 "pdflatex"
   "report.bbl" 1716232575 2578 44c88cd7280bea68ee8cfea7c2c3a464 "bibtex report"
-  "report.out" 1716232697 1087 01e1b0f9e78cf19b150a21bbb3fef2a9 "pdflatex"
-  "report.tex" 1716232696 24905 e05a640e930481ef9a05c76a66b3ec9d ""
+  "report.out" 1716316437 1087 01e1b0f9e78cf19b150a21bbb3fef2a9 "pdflatex"
+  "report.tex" 1716316436 24965 abcef9c152e0669b0aff974b086f3a09 ""
   (generated)
   "report.aux"
   "report.log"

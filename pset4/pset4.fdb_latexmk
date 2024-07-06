@@ -1,6 +1,6 @@
 # Fdb version 4
-["pdflatex"] 1715895441 "/Users/calvinwalker/Documents/Coursework/PGM/pset4/pset4.tex" "pset4.pdf" "pset4" 1715895442 0
-  "/Users/calvinwalker/Documents/Coursework/PGM/pset4/pset4.tex" 1715895441 9960 620ddff1a6c6cc7e245494502078dbdc ""
+["pdflatex"] 1715897191 "/Users/calvinwalker/Documents/Coursework/PGM/pset4/pset4.tex" "pset4.pdf" "pset4" 1715897192 0
+  "/Users/calvinwalker/Documents/Coursework/PGM/pset4/pset4.tex" 1715897191 10272 20b3a39c4b3216609bcab7feb00bc83e ""
   "/usr/local/texlive/2023/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
   "/usr/local/texlive/2023/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam10.tfm" 1246382020 916 f87d7c45f9c908e672703b83b72241a3 ""
@@ -173,9 +173,9 @@
   "/usr/local/texlive/2023/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1695827054 4623355 b8cad38412faebe1ce5b780a45db67bd ""
   "/usr/local/texlive/2023/texmf-var/web2c/pdftex/pdflatex.fmt" 1695827046 7883453 84804a115cc0d4b465f52b0c27f8b8c3 ""
   "/usr/local/texlive/2023/texmf.cnf" 1678822455 577 1b2b1af17af2508fb20dd85783af4050 ""
-  "pset4.aux" 1715895442 554 dd2b48f1aba1e3b725040b4d3abf7fbe "pdflatex"
-  "pset4.out" 1715895442 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
-  "pset4.tex" 1715895441 9960 620ddff1a6c6cc7e245494502078dbdc ""
+  "pset4.aux" 1715897192 554 dd2b48f1aba1e3b725040b4d3abf7fbe "pdflatex"
+  "pset4.out" 1715897192 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
+  "pset4.tex" 1715897191 10272 20b3a39c4b3216609bcab7feb00bc83e ""
   (generated)
   "pset4.aux"
   "pset4.log"

@@ -35,6 +35,7 @@
 \usepackage{algpseudocode}
 \usepackage{graphicx}
 \usepackage{subcaption}
+\usepackage{bbm}
 
 \bibliographystyle{unsrtnat}
 
@@ -99,11 +100,11 @@
 
 \section{Introduction}
 
-Reliable causal inference is central to a variety of diciplines in the natural and social sciences. While the Randomized Control Trial (RCT) has long been the gold standard in terms of 
+Reliable causal inference is central to a variety of disciplines in the natural and social sciences. While the Randomized Control Trial (RCT) has long been a gold standard in terms of 
 causal inference, central to it is an assumption in the economic literature first coined by \cite{Rubin} known as SUTVA, or the stable unit treatment value assumption, which states that there is no
 interference between units, and no hidden variations of treatment. Essentially, the outcome of each individual does not depend on the treatment assigment of others. When this assumption is violated, 
-there are said to be spillover effects. And it often is. In an RCT on 61 million Facebook Users in the buildup to the 2020 United States Congressional elections, the treatment—sending a message that encouraged users to vote—was 
-observed to ``spillover'' to the treated individual's closest Facebook friends \cite{Bond}. 
+there are said to be spillover effects. In a large-scale RCT on 61 million Facebook Users in the buildup to the 2020 United States Congressional election, the treatment—sending a message that encouraged users to vote—was 
+observed to ``spillover'' to the treated individual's closest Facebook friends (\cite{Bond}). 
 
 A number of recent works have sought to address estimation of both treatment and spillover effects in the presence of SUTVA violations, particularly in the context of an observed social network between individuals. \cite{pmlr-v28-toulis13} seek to estimate spillover effects directly, developing both 
 an experimental design using sequential randomization, and a Bayesian procedure that assumes a linear response. Other approaches consist of the researcher specifying an ``exposure mapping'' to categorize individuals, e.g. treated, neighbor of treated, etc. and then use 
@@ -131,8 +132,8 @@ $P$, then, is defined as a Gibbs distribution that factorizes over $H$: \\
 \end{displaymath}
 By having each individual represented as a Bernoulli random vairable in $H$, we can reformulate the problem of estimating the exposure probability for node $i$,  $\pi_i$, into 
 an inference problem where we seek to infer marginal probability distributions for each node. Observe that for any treated unit, they are assumed to be already exposed, so $X_i = 1$ for all individuals $i$ where $Z_i = 1$. 
-This observation acts as our evidence in $P$ when performing inference on the unknown marginal distributions of the other nodes in $H$. Formally, we infer the posterior distribution $P(X_i\ |\ e)$, where $e = \{X_i = 1\ |\ Z_i = 1\}$. 
-This reformulation allows us to use a host of existing inference algorithms to learn the posterior marginals. In practice, we define a clique tree $\mathcal{T}$ for $B$, and then use the Sum-Product Belief Propogation algorithm (CTree-SP-Calibrate) defined in \cite{koller}. 
+This observation acts as our evidence in $P$ when performing inference on the unknown marginal distributions of the other nodes in $H$. Formally, we infer the marginal distribution $P(X_i\ |\ e)$, for each $i \in \{N\}$, where $e = \{X_i = 1\ |\ Z_i = 1\}$. 
+This reformulation allows us to use a host of existing inference algorithms to learn the marginals. In practice, we define a clique tree $\mathcal{T}$ for $B$, and then use the Sum-Product Belief Propogation algorithm (CTree-SP-Calibrate) defined in \cite{koller}. 
 \begin{algorithm}[h]
   \caption{CTree-SP-Calibrate}
   % \label{algo1}
@@ -151,7 +152,7 @@ This reformulation allows us to use a host of existing inference algorithms to l
 \end{algorithmic}
 \end{algorithm}
 In larger social networks where exact inference may be intractable, 
-approximation alogrithms can be used, although we do not examine this case. Since nodes not influenced by the treatment group have the posterior marginal distribution: $P(X_i = 1) = P(X_i = 0) = 0.5$, we let $\pi_i = P(X_i = 1) - P(X_i = 0)$ to obtain easily interpretable exposure probabilities on the interval $[0, 1]$.
+approximation alogrithms can be used, although we do not examine this case. Since nodes not influenced by the treatment group have the marginal distribution: $P(X_i = 1) = P(X_i = 0) = 0.5$, we let $\pi_i = P(X_i = 1) - P(X_i = 0)$ to obtain easily interpretable exposure probabilities on the interval $[0, 1]$.
 %Algorithm 1: Sum-Product BP 
 
 
@@ -176,7 +177,7 @@ edge probabilities, and can make use of this prior belief. For instance, let $p_
 $i$ and node $j$. A reasonable prior could be $p_{i,j} \sim $ Beta$(5, 5)$. This belief could be incorporated by initializing the 
 edge potentials according to this distribution. The next is a latent variable model introduced by \cite{Handcock}. Where we model $p_{i,j}$ using a logistic regression where the probability of an edge depends on euclidean distance in latent space: 
 \begin{equation}
-  \mbox{log-odds}(p_{i,j}) = \beta X_{i,j} - ||z_i - z_j||^2
+  \mbox{log-odds}(p_{i,j}) = \beta X_{i,j} - |z_i - z_j|
 \end{equation}
 Where $z_i$ and $z_j$ are node $i$ and node $j$'s respective positions in latent space, and $X_{i,j}$ is some vector valued edge covariates. Here, it is assumed that the existence of an edge is independent of other edges. 
 Handcock jointly estimates the parameter $\beta$ and the latent $z_i$'s using MCMC, with prior: \begin{displaymath}
@@ -192,7 +193,7 @@ Given the edge probabilities $p_{i,j}$, we can specify the the edge potentials i
 we make the assumption that a higher edge probability leads to greater social influence, and thus likelihood that two adjacent nodes 
 have the same value, i.e. $P(X_i = X_j)$ is monotonically increacing in $p_{i,j}$. To acheive this, we define the edge potentials as:
 \begin{displaymath}
-  \phi_{i,j}(X_i, X_j) = 1 - p_{i,j}\mathbf{1}\{{X_i \neq X_j}\} \\[0.5ex]
+  \phi_{i,j}(X_i, X_j) = 1 - p_{i,j}\mathbbm{1}\{{X_i \neq X_j}\} \\[0.5ex]
 \end{displaymath}
 We found that this specification resulted in a plausible empirical results across a number of different social networks, but this is another place where a researcher may choose to 
 incorporate prior beliefs in specifying how social influence propogates in a specific network.
@@ -235,7 +236,7 @@ treatment assigments on each of the possible combinations of data generating pro
   \centering
   \begin{tabular}{ccccccc}
     \toprule
-    & & \multicolumn{2}{c}{Eighth Graders} & & \multicolumn{2}{c}{Aarhaus CS}              \\
+    & & \multicolumn{2}{c}{Eighth Graders} & & \multicolumn{2}{c}{Aarhus CS}              \\
     \cmidrule{3-4} \cmidrule{6-7}
     DGP & $\phi_{i,j}$ & $\bar{y}^1 - \bar{y}^0$ & $\rho$ & & $\bar{y}^1 - \bar{y}^0$ & $\rho$ \\
     \midrule
@@ -260,7 +261,7 @@ treatment assigments on each of the possible combinations of data generating pro
 
 In general, the point estimates for $\rho$ are an improvement over the naïve estimate $\bar{y}^{1} - \bar{y}^{0}$. However, 
 performance was quite varied across the different data generating processes. In particular, the model was not well suited to capture the effects of the third DGP ($p_{i,j} = 0.5$), even in the 
-case of the Beta prior on the edge potentials, which had quite high Standard Errors for the Aarhaus Computer Science dataset. Still, in the first two data generating processes, 
+case of the Beta prior on the edge potentials, which had quite high Standard Errors for the Aarhus Computer Science dataset. Still, in the first two data generating processes, 
 which are quite different from one another, our model is able to reliably detect the presence, and extent of spillover effects in the data, isolating the average treatment effect as desired. Furthermore, 
 in the case of no spillover effects, we still get the correct point estimate, demonstrating the usefulness of our framework. Next, we test performance when spillover effects are heterogeneous, which is the natural setting for our model. In the following table, we report results from an identical simulation as above, instead 
 now spillover effects are propogated across each edge $(i-j)$ proportional to $p_{i,j}$ according to the latent variable model (1). We do this by conducting a breadth first traversal over the graph where 
@@ -271,7 +272,7 @@ the starting queue is the treatment group.
   \centering
   \begin{tabular}{cccccccc}
     \toprule
-    & \multicolumn{3}{c}{Eighth Graders} & & \multicolumn{3}{c}{Aarhaus CS}              \\
+    & \multicolumn{3}{c}{Eighth Graders} & & \multicolumn{3}{c}{Aarhus CS}              \\
     \cmidrule{2-4} \cmidrule{6-8}
     $\phi_{i,j}$ & $\bar{y}^1 - \bar{y}^0$ & $\rho$ & $\gamma$ & & $\bar{y}^1 - \bar{y}^0$ & $\rho$ & $\gamma$ \\
     \midrule
@@ -319,8 +320,9 @@ addition to using knowledge of unit-level outcomes. For these reasons, it is unl
 This paper proposes a probabilistic graphical model based framework for causal inference under interference in social networks. In particular, 
 we define a pairwise Markov Random Field over the social network, that allows us to infer exposure probabilities given a particular instantiation of the 
 random experiment. We examine the performance of the proposed framework in a variety of plausible settings and data generating processes for spillover effects,
-and find that it can reliably detect the presence (or non-presence) of spillover. While the Markov Random Field approach is well suited to estimating the average treatment effect, 
-more research is necessary to develop reliable and flexible estimators that extend this framework to estimate the spillover effects directly. 
+and find that it can reliably detect the presence, or non-presence, of spillover. While the Markov Random Field approach is well suited to estimating the average treatment effect, 
+more research is necessary to develop reliable and flexible estimators that extend this framework to estimate the spillover effects directly, particularly in the case of homogeneous 
+spillover. 
 
 
 

@@ -78,7 +78,7 @@
         \begin{align*}
             \mathbb{E}[\lambda_x] = \frac{\alpha + \frac{1}{2}M}{\beta + \frac{1}{2}\sum_m(x^m - \mu)^2} & & \text{Var}[\lambda_x] = \frac{\alpha + \frac{1}{2}M}{(\beta + \frac{1}{2}\sum_m(x^m - \mu)^2)^2}
         \end{align*}
-        \dots
+        So we update our beliefs according to the observed variance in the data. 
     \end{enumerate}
     \item
     \begin{enumerate}[(i)]
@@ -170,7 +170,7 @@
     \end{align*}
 \end{enumerate}
 \textbf{2.}\begin{enumerate}[(a)]
-    \item 
+    \item There are $\binom{n}{d}$ for the Markov Blanket of some node $X$, so to achieve statistical significance in potentially many repeated tests for conditional independence, we would need a lot of data. 
     \item \begin{align*}
         H(X\ |\ \mathbf{X} - X) &= -\sum_{X, \mathbf{X} - X}P(X, \mathbf{X} - X) \log P(X\ |\ \mathbf{X} - X) \\
         &= -\sum_{X,  \mathbf{X} - X - \text{MB}(X), \text{MB}(X)}P(X, \mathbf{X} - X - \text{MB}(X), \text{MB}(X)) \log P(X\ |\  \mathbf{X} - X - \text{MB}(X), \text{MB}(X))
@@ -186,10 +186,10 @@
     \end{align*}
     \item Since $H(A\ | B, C) \leq H(A | B)$ for disjoint sets $A, B, C$, we can minimize the conditional entropy $H(X|Y)$ by conditioning on the rest of the nodes. So $H(X|\mathbf{X} - X) = H(X|\mathbf{X} - X - \text{MB}(X)\text{MB}(X)) = H(X|, \text{MB}(X))$ minimizes the conditional entropy. Thus, $\text{MB}(X) = \argmin_Y H(X|Y)$.
     \item For each node $X$, compute its Markov Blanket as MB$(X) = \argmin_Y H(X|Y)$. We have $n$ nodes, and there are $\binom{n}{d}$ possible Markov Blankets for each node, the conditional entropy of which takes $c$ complexity to compute. So the algorithm runs in $O(n\binom{n}{d}c)$.
-
 \end{enumerate}
 \textbf{3.}\begin{enumerate}[(a)]
-    \item 
+    \item I did not collaborate.
+    \item 4 - 7 hours. 
 \end{enumerate}
 
 \end{document}
